@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LB Prestige Appart — Administration</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gold-light:#E8C96A;--gold-dim:#6B5520;--dark:#080808;--dark2:#0F0F0F;--dark3:#161616;--dark4:#1E1E1E;--dark5:#252525;--text:#EDE8DC;--text-muted:#8A7E64;--text-dim:#3A3428;--green:#4CAF7D;--red:#C94C4C}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Montserrat',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden}
+.grain{position:fixed;inset:0;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--dark);z-index:1000;display:flex;align-items:center;justify-content:center}
+.login-box{width:360px;text-align:center}
+.l-diamond{width:12px;height:12px;background:var(--gold);transform:rotate(45deg);margin:0 auto 32px;animation:pulse 2.5s ease-in-out infinite}
+.l-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;letter-spacing:.12em;margin-bottom:5px}
+.l-sub{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+.l-role{font-size:10px;color:var(--gold);letter-spacing:.2em;text-transform:uppercase;border:0.5px solid rgba(201,168,76,.3);padding:5px 16px;display:inline-block;margin-bottom:36px}
+.l-inp{width:100%;background:var(--dark3);border:0.5px solid rgba(201,168,76,.2);padding:15px 18px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:300;outline:none;transition:border-color .3s;margin-bottom:12px;letter-spacing:.04em}
+.l-inp:focus{border-color:rgba(201,168,76,.6)}
+.l-inp::placeholder{color:var(--text-dim)}
+.l-btn{width:100%;padding:16px;background:transparent;border:0.5px solid var(--gold);color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;letter-spacing:.1em;cursor:pointer;position:relative;overflow:hidden;transition:color .35s}
+.l-btn::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateX(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);z-index:0}
+.l-btn:hover::before{transform:translateX(0)}
+.l-btn:hover{color:var(--dark)}
+.l-btn span{position:relative;z-index:1}
+.l-err{color:var(--red);font-size:11px;margin-top:10px;height:14px}
+
+/* APP */
+#app{display:none;height:100vh;flex-direction:column}
+#app.show{display:flex}
+
+/* TOPBAR */
+.topbar{height:54px;background:var(--dark2);border-bottom:0.5px solid rgba(201,168,76,.15);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.tb-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;letter-spacing:.14em;color:var(--gold)}
+.tb-right{display:flex;align-items:center;gap:14px}
+.tb-badge{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);background:var(--dark3);border:0.5px solid rgba(201,168,76,.15);padding:5px 12px}
+.tb-out{background:none;border:none;color:var(--text-dim);font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:color .2s}
+.tb-out:hover{color:var(--gold)}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:215px;background:var(--dark2);border-right:0.5px solid rgba(201,168,76,.1);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-section{padding:22px 16px 6px;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--text-dim)}
+.nav-item{display:flex;align-items:center;gap:11px;padding:11px 20px;cursor:pointer;transition:all .18s;border-left:2px solid transparent;font-size:12px;letter-spacing:.05em;color:var(--text-muted);position:relative}
+.nav-item:hover{color:var(--text);background:var(--dark3)}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,.05)}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.nb{position:absolute;right:14px;background:var(--red);color:#fff;font-size:9px;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600}
+.sb-foot{margin-top:auto;padding:18px;border-top:0.5px solid rgba(201,168,76,.1);font-size:10px;color:var(--text-dim);letter-spacing:.06em;line-height:1.9}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;background:var(--dark)}
+.panel{display:none;padding:28px 32px;animation:fadeUp .35s ease}
+.panel.active{display:block}
+.pg-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:.07em;margin-bottom:4px}
+.pg-sub{font-size:11px;color:var(--text-muted);letter-spacing:.06em;margin-bottom:28px}
+
+/* METRICS */
+.met-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.met{background:var(--dark2);border:0.5px solid rgba(201,168,76,.15);padding:22px;position:relative;overflow:hidden}
+.met::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.met-val{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--gold);line-height:1}
+.met-lbl{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-top:7px}
+.met-sub{font-size:11px;color:var(--green);margin-top:5px}
+.met-sub.warn{color:var(--red)}
+
+/* CHART CARDS */
+.cc{background:var(--dark2);border:0.5px solid rgba(201,168,76,.15);padding:22px}
+.cc-title{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.cc-title::after{content:'';flex:1;height:0.5px;background:rgba(201,168,76,.15)}
+.ch-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+
+/* BAR CHART */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:110px}
+.bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bar{width:100%;background:rgba(201,168,76,.12);border-top:1px solid var(--gold-dim)}
+.bar:hover{background:rgba(201,168,76,.25)}
+.bl{font-size:9px;color:var(--text-dim);letter-spacing:.04em}
+.bv{font-size:10px;color:var(--text-muted);font-weight:500}
+
+/* CRIT BARS */
+.crit-bars{display:flex;flex-direction:column;gap:11px}
+.cr{display:flex;align-items:center;gap:10px}
+.cr-n{font-size:11px;color:var(--text-muted);width:125px;flex-shrink:0}
+.cr-t{flex:1;height:2px;background:var(--dark5)}
+.cr-f{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));transition:width .9s cubic-bezier(.4,0,.2,1)}
+.cr-s{font-size:11px;color:var(--text);font-weight:500;width:26px;text-align:right}
+
+/* REVIEWS */
+.rv-filters{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}
+.fb{padding:6px 14px;border:0.5px solid rgba(201,168,76,.18);background:transparent;color:var(--text-muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.fb:hover{border-color:rgba(201,168,76,.45);color:var(--text)}
+.fb.on{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
+
+.rv{background:var(--dark2);border:0.5px solid rgba(201,168,76,.12);padding:22px;margin-bottom:11px;transition:border-color .2s}
+.rv:hover{border-color:rgba(201,168,76,.3)}
+.rv.unread{border-left:2px solid var(--gold)}
+.rv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.rv-auth{font-size:14px;font-weight:500;letter-spacing:.03em}
+.rv-code{font-size:10px;color:var(--gold);letter-spacing:.12em;background:rgba(201,168,76,.08);border:0.5px solid rgba(201,168,76,.2);padding:2px 8px;margin-left:8px}
+.rv-meta{font-size:10px;color:var(--text-muted);margin-top:3px;letter-spacing:.05em}
+.rv-stars{color:var(--gold);font-size:15px;letter-spacing:1px}
+.rv-badge{font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:3px 9px;border:0.5px solid rgba(201,168,76,.25);color:var(--text-muted);margin-top:5px;display:inline-block}
+.rv-txt{font-size:13px;color:var(--text-muted);line-height:1.75;font-weight:300;margin:10px 0 12px}
+.rv-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.rt{font-size:10px;padding:3px 9px;letter-spacing:.06em}
+.rt.pos{border:0.5px solid rgba(76,175,125,.35);color:#4CAF7D;background:rgba(76,175,125,.05)}
+.rt.neg{border:0.5px solid rgba(201,168,76,.25);color:var(--text-muted)}
+.reply-area{border-top:0.5px solid rgba(255,255,255,.04);padding-top:14px}
+.existing-reply{background:var(--dark3);border-left:2px solid var(--gold-dim);padding:10px 14px;margin-bottom:10px;font-size:12px;color:var(--text-muted);line-height:1.7;font-style:italic}
+.er-lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:5px;font-style:normal}
+.reply-box{width:100%;background:var(--dark3);border:0.5px solid rgba(201,168,76,.12);padding:11px 14px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;outline:none;resize:vertical;min-height:72px;line-height:1.7;transition:border-color .3s}
+.reply-box:focus{border-color:rgba(201,168,76,.45)}
+.reply-box::placeholder{color:var(--text-dim)}
+.ra{display:flex;gap:7px;margin-top:7px;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn-g{padding:8px 18px;background:transparent;border:0.5px solid var(--gold);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:color .3s}
+.btn-g::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:0}
+.btn-g:hover::before{transform:translateX(0)}
+.btn-g:hover{color:var(--dark)}
+.btn-g span{position:relative;z-index:1}
+.btn-gh{padding:8px 18px;background:transparent;border:0.5px solid rgba(255,255,255,.1);color:var(--text-muted);font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.btn-gh:hover{border-color:rgba(255,255,255,.3);color:var(--text)}
+.btn-wa{padding:8px 18px;background:rgba(37,211,102,.08);border:0.5px solid rgba(37,211,102,.35);color:#25D166;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.btn-wa:hover{background:rgba(37,211,102,.18)}
+
+/* CODES PANEL */
+.codes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.code-card{background:var(--dark2);border:0.5px solid rgba(201,168,76,.15);padding:16px;position:relative}
+.code-card.used{opacity:.5;border-style:dashed}
+.code-val{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.12em;color:var(--gold);margin-bottom:4px}
+.code-name{font-size:11px;color:var(--text-muted);margin-bottom:8px}
+.code-status{font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:3px 8px;display:inline-block}
+.code-status.active{border:0.5px solid rgba(76,175,125,.35);color:#4CAF7D}
+.code-status.used{border:0.5px solid rgba(255,255,255,.1);color:var(--text-dim)}
+.code-status.new{border:0.5px solid rgba(201,168,76,.35);color:var(--gold)}
+.create-code{background:var(--dark2);border:0.5px solid rgba(201,168,76,.15);padding:24px;margin-bottom:14px}
+.cc-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+.f-inp{background:var(--dark3);border:0.5px solid rgba(201,168,76,.15);padding:11px 14px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:12px;outline:none;transition:border-color .3s}
+.f-inp:focus{border-color:rgba(201,168,76,.5)}
+.f-inp::placeholder{color:var(--text-dim)}
+.f-lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+
+/* MSG */
+.msg-compose{background:var(--dark2);border:0.5px solid rgba(201,168,76,.15);padding:24px;margin-bottom:16px}
+.compose-lbl{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.cfield{margin-bottom:14px}
+.cfield-l{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px}
+.c-inp{width:100%;background:var(--dark3);border:0.5px solid rgba(201,168,76,.12);padding:11px 14px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;outline:none;transition:border-color .3s}
+.c-inp:focus{border-color:rgba(201,168,76,.45)}
+.c-inp::placeholder{color:var(--text-dim)}
+.tpl-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.tpl{padding:6px 13px;border:0.5px solid rgba(201,168,76,.18);color:var(--text-muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.tpl:hover{border-color:var(--gold);color:var(--gold)}
+
+/* SETTINGS */
+.ss{background:var(--dark2);border:0.5px solid rgba(201,168,76,.15);padding:24px;margin-bottom:14px}
+.ss-title{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;padding-bottom:10px;border-bottom:0.5px solid rgba(201,168,76,.1)}
+.s-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid rgba(255,255,255,.04)}
+.s-row:last-child{border-bottom:none}
+.s-lbl{font-size:13px}
+.s-desc{font-size:11px;color:var(--text-muted);margin-top:2px}
+.toggle{width:38px;height:20px;background:var(--dark5);border-radius:10px;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0}
+.toggle.on{background:var(--gold-dim)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:var(--text-muted);border-radius:50%;top:3px;left:3px;transition:all .3s}
+.toggle.on::after{background:var(--gold);left:21px}
+
+/* STATS PANEL */
+.sbar{display:flex;flex-direction:column;gap:10px}
+.sr{display:flex;align-items:center;gap:10px}
+.sr-n{font-size:11px;color:var(--text-muted);width:110px;flex-shrink:0}
+.sr-t{flex:1;height:3px;background:var(--dark5)}
+.sr-f{height:100%;transition:width .9s cubic-bezier(.4,0,.2,1)}
+.sr-v{font-size:11px;width:28px;text-align:right}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark3);border:0.5px solid rgba(201,168,76,.4);padding:12px 20px;font-size:12px;color:var(--gold);letter-spacing:.06em;z-index:9998;transform:translateY(70px);opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1)}
+.toast.show{transform:translateY(0);opacity:1}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(45deg) scale(1.5)}}
+.bottom-nav{display:none}
+@media(max-width:700px){
+  .sidebar{display:none}
+  .met-grid{grid-template-columns:1fr 1fr}
+  .ch-row{grid-template-columns:1fr}
+  .panel{padding:16px 12px}
+  .codes-grid{grid-template-columns:1fr 1fr}
+  .cc-form{grid-template-columns:1fr}
+  .content{padding-bottom:70px}
+  .bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;height:62px;
+    background:var(--dark2);border-top:0.5px solid rgba(201,168,76,.2);
+    z-index:100;justify-content:space-around;align-items:center
+  }
+  .bn-item{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    cursor:pointer;padding:6px 10px;flex:1;border:none;background:none;
+    color:var(--text-muted);font-family:'Montserrat',sans-serif;
+    font-size:9px;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;
+    position:relative
+  }
+  .bn-item.active{color:var(--gold)}
+  .bn-icon{font-size:18px;line-height:1}
+  .bn-badge{
+    position:absolute;top:4px;right:10px;background:var(--red);color:#fff;
+    font-size:8px;width:14px;height:14px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:600
+  }
+  .topbar .tb-brand{font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="l-diamond"></div>
+    <div class="l-title">LB Prestige Appart</div>
+    <div class="l-sub">Kotto · Carrefour des Roses · Douala</div>
+    <div class="l-role">Espace Propriétaire</div>
+    <input class="l-inp" type="text" id="l-user" placeholder="Identifiant" autocomplete="off">
+    <input class="l-inp" type="password" id="l-pass" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="l-btn" onclick="doLogin()"><span>Accéder à mon espace — ✦</span></button>
+    <div class="l-err" id="l-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-brand">LB Prestige Appart — Propriétaire</div>
+    <div class="tb-right">
+      <div class="tb-badge">Lionel Brice</div>
+      <button class="tb-out" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sb-section">Navigation</div>
+      <div class="nav-item active" onclick="goPanel('dash',this)"><span class="nav-icon">◈</span> Tableau de bord</div>
+      <div class="nav-item" onclick="goPanel('avis',this)" style="position:relative"><span class="nav-icon">✦</span> Avis clients<span class="nb" id="nb">3</span></div>
+      <div class="nav-item" onclick="goPanel('codes',this)"><span class="nav-icon">⊛</span> Codes clients</div>
+      <div class="nav-item" onclick="goPanel('messages',this)"><span class="nav-icon">◉</span> Messages</div>
+      <div class="nav-item" onclick="goPanel('stats',this)"><span class="nav-icon">◇</span> Statistiques</div>
+      <div class="sb-section">Compte</div>
+      <div class="nav-item" onclick="goPanel('settings',this)"><span class="nav-icon">⊙</span> Paramètres</div>
+      <div class="sb-foot">LB Prestige Appart<br>Kotto, Douala<br><br>+237 6 91 58 14 73<br>+237 651 47 39 72</div>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dash">
+        <div class="pg-title">Tableau de bord</div>
+        <div class="pg-sub">Vue d'ensemble · LB Prestige Appart</div>
+        <div class="met-grid">
+          <div class="met"><div class="met-val">4.7</div><div class="met-lbl">Note moyenne</div><div class="met-sub">↑ +0.2 ce mois</div></div>
+          <div class="met"><div class="met-val">28</div><div class="met-lbl">Avis reçus</div><div class="met-sub">↑ +5 ce mois</div></div>
+          <div class="met"><div class="met-val">89%</div><div class="met-lbl">Recommandent</div><div class="met-sub" style="color:var(--gold)">= stable</div></div>
+          <div class="met"><div class="met-val">3</div><div class="met-lbl">Sans réponse</div><div class="met-sub warn">⚠ À traiter</div></div>
+        </div>
+        <div class="ch-row">
+          <div class="cc"><div class="cc-title">Avis par mois</div><div class="bar-chart" id="bc"></div></div>
+          <div class="cc"><div class="cc-title">Performance par critère</div><div class="crit-bars" id="crc"></div></div>
+        </div>
+        <div class="ch-row" style="margin-top:14px">
+          <div class="cc" style="display:flex;align-items:center;justify-content:center;padding:32px">
+            <div style="text-align:center">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;color:var(--gold);line-height:1">89%</div>
+              <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-top:8px">Taux de recommandation</div>
+              <div style="margin-top:20px"><button class="btn-g" onclick="goPanel('avis',document.querySelectorAll('.nav-item')[1])"><span>Voir les avis →</span></button></div>
+            </div>
+          </div>
+          <div class="cc">
+            <div class="cc-title">Derniers avis reçus</div>
+            <div id="dash-recent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AVIS -->
+      <div class="panel" id="panel-avis">
+        <div class="pg-title">Avis clients</div>
+        <div class="pg-sub">Consultez et répondez à chaque avis reçu</div>
+        <div class="rv-filters">
+          <button class="fb on" onclick="filterRv('all',this)">Tous (28)</button>
+          <button class="fb" onclick="filterRv('unread',this)">Non lus (3)</button>
+          <button class="fb" onclick="filterRv('noreply',this)">Sans réponse (3)</button>
+          <button class="fb" onclick="filterRv('5',this)">★★★★★</button>
+          <button class="fb" onclick="filterRv('studio',this)">Studio</button>
+          <button class="fb" onclick="filterRv('appart',this)">Appartement</button>
+        </div>
+        <div id="rv-list"></div>
+      </div>
+
+      <!-- CODES CLIENTS -->
+      <div class="panel" id="panel-codes">
+        <div class="pg-title">Codes clients</div>
+        <div class="pg-sub">Créez et gérez les codes d'accès de vos clients</div>
+        <div class="create-code">
+          <div class="compose-lbl">Créer un nouveau code</div>
+          <div class="cc-form">
+            <div>
+              <div class="f-lbl">Code personnalisé</div>
+              <input class="f-inp" type="text" id="new-code" placeholder="ex : LB-011" style="width:100%">
+            </div>
+            <div>
+              <div class="f-lbl">Nom du client (optionnel)</div>
+              <input class="f-inp" type="text" id="new-client" placeholder="ex : Marie Kouam" style="width:100%">
+            </div>
+            <div>
+              <div class="f-lbl" style="opacity:0">.</div>
+              <button class="btn-g" style="width:100%" onclick="createCode()"><span>+ Créer</span></button>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:var(--text-muted);line-height:1.8">
+            💡 Suggestion de codes : <span style="color:var(--gold)">LB-011 · LB-VIP3 · PRESTIGE4 · KOTTO2025</span><br>
+            Une fois créé, transmettez le code au client via WhatsApp avec le fichier <strong>lb_prestige_client.html</strong>.
+          </div>
+        </div>
+        <div class="cc"><div class="cc-title">Codes actifs</div><div class="codes-grid" id="codes-grid"></div></div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="panel" id="panel-messages">
+        <div class="pg-title">Messages clients</div>
+        <div class="pg-sub">Envoyez des messages personnalisés via WhatsApp</div>
+        <div class="msg-compose">
+          <div class="compose-lbl">Composer un message</div>
+          <div class="cfield"><div class="cfield-l">Destinataire</div><input class="c-inp" type="text" id="msg-to" placeholder="Nom du client ou numéro WhatsApp"></div>
+          <div class="cfield"><div class="cfield-l">Modèles rapides</div>
+            <div class="tpl-row">
+              <span class="tpl" onclick="setTpl('welcome')">Bienvenue</span>
+              <span class="tpl" onclick="setTpl('thanks')">Merci séjour</span>
+              <span class="tpl" onclick="setTpl('feedback')">Demande d'avis + code</span>
+              <span class="tpl" onclick="setTpl('promo')">Offre spéciale</span>
+              <span class="tpl" onclick="setTpl('confirm')">Confirmation réservation</span>
+            </div>
+          </div>
+          <div class="cfield"><div class="cfield-l">Message</div><textarea class="c-inp" id="msg-body" style="min-height:110px;resize:vertical;line-height:1.7" placeholder="Rédigez votre message..."></textarea></div>
+          <div class="cfield"><div class="cfield-l">Code client à inclure</div>
+            <input class="c-inp" type="text" id="msg-code" placeholder="ex : LB-011 (sera inséré automatiquement dans le message)">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-g" onclick="toastMsg('Message préparé ✦')"><span>Préparer</span></button>
+            <button class="btn-wa" onclick="sendWA()">Envoyer via WhatsApp ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="panel" id="panel-stats">
+        <div class="pg-title">Statistiques</div>
+        <div class="pg-sub">Analyse complète de votre appartement</div>
+        <div class="ch-row">
+          <div class="cc"><div class="cc-title">Studio vs Appartement</div><div id="type-bars"></div></div>
+          <div class="cc"><div class="cc-title">Points forts cités</div><div class="sbar" id="str-bars"></div></div>
+        </div>
+        <div class="cc" style="margin-top:14px;padding:22px"><div class="cc-title">Axes d'amélioration</div><div class="sbar" id="imp-bars"></div></div>
+        <div class="cc" style="margin-top:14px;padding:22px"><div class="cc-title">Évolution note moyenne</div><div style="display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:8px" id="evo"></div></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="pg-title">Paramètres</div>
+        <div class="pg-sub">Configuration de votre espace</div>
+        <div class="ss">
+          <div class="ss-title">Informations établissement</div>
+          <div class="cfield"><div class="cfield-l">Nom</div><input class="c-inp" value="LB Prestige Appart"></div>
+          <div class="cfield"><div class="cfield-l">Adresse</div><input class="c-inp" value="Kotto, Carrefour des Roses, Douala"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="cfield"><div class="cfield-l">Studio / nuit</div><input class="c-inp" value="25 000 FCFA"></div>
+            <div class="cfield"><div class="cfield-l">Appart / nuit</div><input class="c-inp" value="35 000 FCFA"></div>
+          </div>
+          <button class="btn-g" onclick="toastMsg('Sauvegardé ✦')"><span>Sauvegarder</span></button>
+        </div>
+        <div class="ss">
+          <div class="ss-title">Sécurité accès propriétaire</div>
+          <div class="cfield"><div class="cfield-l">Nouvel identifiant</div><input class="c-inp" type="text" placeholder="Nouvel identifiant"></div>
+          <div class="cfield"><div class="cfield-l">Nouveau mot de passe</div><input class="c-inp" type="password" placeholder="Nouveau mot de passe"></div>
+          <button class="btn-g" onclick="toastMsg('Mot de passe mis à jour ✦')"><span>Valider</span></button>
+        </div>
+        <div class="ss">
+          <div class="ss-title">Notifications</div>
+          <div class="s-row"><div><div class="s-lbl">Alerte nouvel avis</div><div class="s-desc">Notification à chaque avis reçu</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="s-row"><div><div class="s-lbl">Rappel sans réponse</div><div class="s-desc">Alerte après 48h sans réponse</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="s-row"><div><div class="s-lbl">Rapport mensuel</div><div class="s-desc">Résumé de performance mensuel</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+        <div class="ss" id="jsonbin-section">
+          <div class="ss-title">☁️ Connecter JSONBin — Stockage des avis</div>
+          <p style="font-size:11px;color:var(--text-muted);margin-bottom:16px;line-height:1.7">
+            JSONBin permet de sauvegarder les avis clients en ligne. 
+            Créez un compte gratuit sur <strong style="color:var(--gold)">jsonbin.io</strong>, 
+            créez un Bin avec <code style="background:var(--dark3);padding:2px 6px;color:var(--gold)">{"reviews":[]}</code>, 
+            puis collez vos identifiants ci-dessous.
+          </p>
+          <div class="cfield">
+            <div class="cfield-l">Bin ID</div>
+            <input class="c-inp" id="jb-bin-id" placeholder="ex: 6642abc123def456789" style="font-family:monospace">
+          </div>
+          <div class="cfield">
+            <div class="cfield-l">Clé API (X-Master-Key)</div>
+            <input class="c-inp" id="jb-api-key" type="password" placeholder="$2b$10$..." style="font-family:monospace">
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn-g" onclick="saveJsonBin()"><span>💾 Connecter JSONBin</span></button>
+            <button class="btn-gh" onclick="testJsonBin()">Tester la connexion</button>
+            <span id="jb-status" style="font-size:11px;color:var(--text-muted)"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV MOBILE -->
+<div class="bottom-nav" id="bottom-nav">
+  <button class="bn-item active" onclick="goPanel('dash',this)" data-panel="dash"><span class="bn-icon">◈</span>Accueil</button>
+  <button class="bn-item" onclick="goPanel('avis',this)" data-panel="avis" style="position:relative"><span class="bn-icon">✦</span>Avis<span class="bn-badge" id="nb2">3</span></button>
+  <button class="bn-item" onclick="goPanel('codes',this)" data-panel="codes"><span class="bn-icon">⊛</span>Codes</button>
+  <button class="bn-item" onclick="goPanel('messages',this)" data-panel="messages"><span class="bn-icon">◉</span>Messages</button>
+  <button class="bn-item" onclick="goPanel('settings',this)" data-panel="settings"><span class="bn-icon">⊙</span>Config</button>
+</div>
+<div class="toast" id="t"></div>
+
+<script>
+
+// ─── JSONBIN ───
+function loadJsonBinCreds(){
+  const binId = localStorage.getItem('jb_bin_id') || '';
+  const apiKey = localStorage.getItem('jb_api_key') || '';
+  const binEl = document.getElementById('jb-bin-id');
+  const keyEl = document.getElementById('jb-api-key');
+  if(binEl) binEl.value = binId;
+  if(keyEl) keyEl.value = apiKey;
+  if(binId && apiKey) {
+    const s = document.getElementById('jb-status');
+    if(s) s.textContent = '✅ JSONBin connecté';
+    if(s) s.style.color = '#4CAF7D';
+  }
+}
+function saveJsonBin(){
+  const binId = document.getElementById('jb-bin-id').value.trim();
+  const apiKey = document.getElementById('jb-api-key').value.trim();
+  const s = document.getElementById('jb-status');
+  if(!binId || !apiKey){ s.textContent = '⚠️ Remplissez les deux champs'; s.style.color='var(--red)'; return; }
+  localStorage.setItem('jb_bin_id', binId);
+  localStorage.setItem('jb_api_key', apiKey);
+  s.textContent = '✅ Sauvegardé ! Testez la connexion.';
+  s.style.color = '#4CAF7D';
+  toastMsg('JSONBin configuré ✦');
+}
+async function testJsonBin(){
+  const binId = localStorage.getItem('jb_bin_id');
+  const apiKey = localStorage.getItem('jb_api_key');
+  const s = document.getElementById('jb-status');
+  if(!binId || !apiKey){ s.textContent = '⚠️ Sauvegardez d\'abord les identifiants'; s.style.color='var(--red)'; return; }
+  s.textContent = '⏳ Test en cours...'; s.style.color = 'var(--text-muted)';
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+      headers: { 'X-Master-Key': apiKey }
+    });
+    if(r.ok){ 
+      s.textContent = '✅ Connexion réussie !'; s.style.color='#4CAF7D';
+      toastMsg('JSONBin connecté avec succès ✦');
+    } else {
+      s.textContent = '❌ Erreur : vérifiez vos identifiants'; s.style.color='var(--red)';
+    }
+  } catch(e){ s.textContent = '❌ Erreur réseau'; s.style.color='var(--red)'; }
+}
+
+// ─── AUTH ───
+const ADMIN = { user:'lionel', pass:'LBprestige2024' };
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 jours en ms
+
+function checkSession() {
+  const loginTime = localStorage.getItem('lb_login_time');
+  const isLoggedIn = localStorage.getItem('lb_logged_in');
+  if (isLoggedIn && loginTime) {
+    const elapsed = Date.now() - parseInt(loginTime);
+    if (elapsed < SESSION_DURATION) {
+      // Session encore valide
+      const ls = document.getElementById('login-screen');
+      ls.style.display = 'none';
+      document.getElementById('app').classList.add('show');
+      init();
+      return true;
+    } else {
+      // Session expirée
+      localStorage.removeItem('lb_logged_in');
+      localStorage.removeItem('lb_login_time');
+    }
+  }
+  return false;
+}
+
+function doLogin() {
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  if(u===ADMIN.user && p===ADMIN.pass){
+    localStorage.setItem('lb_logged_in', 'true');
+    localStorage.setItem('lb_login_time', Date.now().toString());
+    const ls=document.getElementById('login-screen');
+    ls.style.opacity='0';ls.style.transition='opacity .4s';
+    setTimeout(()=>{ls.style.display='none';document.getElementById('app').classList.add('show');init();},400);
+  } else {
+    const e=document.getElementById('l-err');
+    e.textContent='Identifiant ou mot de passe incorrect';
+    setTimeout(()=>e.textContent='',2500);
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('lb_logged_in');
+  localStorage.removeItem('lb_login_time');
+  location.reload();
+}
+
+document.getElementById('l-user').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+// Vérifier session au chargement
+checkSession();
+
+// ─── PANELS ───
+function goPanel(id,el){
+  // sync bottom nav
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  var bn=document.querySelector('.bn-item[data-panel="'+id+'"]');
+  if(bn)bn.classList.add('active');
+  window.scrollTo(0,0);
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+// ─── DATA ───
+let REVIEWS = [];
+
+async function loadReviewsFromJsonBin() {
+  const binId = localStorage.getItem('jb_bin_id');
+  const apiKey = localStorage.getItem('jb_api_key');
+  if (!binId || !apiKey) return;
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+      headers: { 'X-Master-Key': apiKey }
+    });
+    const data = await r.json();
+    if (data.record && data.record.reviews) {
+      REVIEWS = data.record.reviews;
+      updateNB();
+      buildDashRecent();
+      renderRv(REVIEWS);
+      buildStats();
+    }
+  } catch(e) { console.error('Erreur chargement avis:', e); }
+}
+
+async function saveReviewsToJsonBin() {
+  const binId = localStorage.getItem('jb_bin_id');
+  const apiKey = localStorage.getItem('jb_api_key');
+  if (!binId || !apiKey) return;
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/' + binId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+      body: JSON.stringify({ reviews: REVIEWS })
+    });
+  } catch(e) { console.error('Erreur sauvegarde:', e); }
+}
+
+let CODES=[
+  {code:'LB-001',client:'Marie Kouam',status:'used'},
+  {code:'LB-002',client:'David Njoya',status:'used'},
+  {code:'LB-003',client:'Alain Mbarga',status:'used'},
+  {code:'LB-VIP1',client:'Sophie Tamba',status:'used'},
+  {code:'PRESTIGE1',client:'Fatima Bello',status:'used'},
+  {code:'LB-004',client:'',status:'active'},
+  {code:'LB-005',client:'',status:'active'},
+  {code:'LB-006',client:'',status:'active'},
+  {code:'CLIENT01',client:'',status:'active'},
+  {code:'CLIENT02',client:'',status:'active'},
+  {code:'LB-VIP2',client:'',status:'active'},
+];
+
+const TPLS={
+  welcome:'Bonjour [Prénom], bienvenue au LB Prestige Appart ! Nous sommes ravis de vous accueillir. N\'hésitez pas à nous contacter pour tout besoin. Bon séjour ! 🏠✨',
+  thanks:'Bonjour [Prénom], merci pour votre séjour au LB Prestige Appart. Nous espérons que vous avez passé un excellent moment. Votre retour est précieux pour nous. À bientôt !',
+  feedback:'Bonjour [Prénom], j\'espère que votre séjour s\'est bien passé ! Pourriez-vous prendre 2 minutes pour partager votre avis ? Voici votre code client : [CODE]\n\nOuvrez le fichier lb_prestige_client.html et saisissez ce code pour laisser votre avis. Merci 🙏',
+  promo:'Bonjour [Prénom], nous avons le plaisir de vous offrir -10% sur votre prochain séjour au LB Prestige Appart ! Offre valable jusqu\'à fin du mois. Contactez-nous pour réserver ! 🌟',
+  confirm:'Bonjour [Prénom], votre réservation au LB Prestige Appart est confirmée. Arrivée prévue demain — nous serons ravis de vous accueillir ! 🏠',
+};
+
+// ─── INIT ───
+function init(){
+  loadJsonBinCreds();buildBC();buildCRC();buildCodes();
+  loadReviewsFromJsonBin();
+}
+
+// ─── BAR CHART ───
+function buildBC(){
+  const M=['Nov','Déc','Jan','Fév','Mar','Avr'];const V=[2,4,3,6,8,5];const mx=Math.max(...V);
+  document.getElementById('bc').innerHTML=M.map((m,i)=>`<div class="bw"><span class="bv">${V[i]}</span><div class="bar" style="height:${Math.round(V[i]/mx*100)}%"></div><span class="bl">${m}</span></div>`).join('');
+}
+
+// ─── CRIT CHART ───
+function buildCRC(){
+  const C=[['Propreté',4.9],['Emplacement',4.7],['Communication',4.6],['Confort',4.4],['Équipements',4.2],['Qualité/prix',4.5]];
+  document.getElementById('crc').innerHTML=C.map(([n,v])=>`<div class="cr"><span class="cr-n">${n}</span><div class="cr-t"><div class="cr-f" style="width:${Math.round(v/5*100)}%"></div></div><span class="cr-s">${v.toFixed(1)}</span></div>`).join('');
+}
+
+// ─── DASH RECENT ───
+function buildDashRecent(){
+  document.getElementById('dash-recent').innerHTML=REVIEWS.slice(0,3).map(r=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid rgba(255,255,255,.04)">
+      <div><div style="font-size:13px">${r.name} ${r.unread?'<span style="font-size:9px;color:var(--gold);letter-spacing:.12em">NOUVEAU</span>':''}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px">${r.date} · ${r.type}</div></div>
+      <div style="color:var(--gold);font-size:13px">${'★'.repeat(r.stars)}</div>
+    </div>`).join('');
+}
+
+// ─── REVIEWS ───
+let curF='all';
+function filterRv(f,btn){
+  curF=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  let list=REVIEWS;
+  if(f==='unread')list=REVIEWS.filter(r=>r.unread);
+  if(f==='noreply')list=REVIEWS.filter(r=>!r.reply);
+  if(f==='5')list=REVIEWS.filter(r=>r.stars===5);
+  if(f==='studio')list=REVIEWS.filter(r=>r.type==='Studio');
+  if(f==='appart')list=REVIEWS.filter(r=>r.type==='Appartement');
+  renderRv(list);
+}
+
+function renderRv(list){
+  if(!list || list.length===0){
+    document.getElementById('rv-list').innerHTML='<div style="padding:40px;text-align:center;color:var(--text-dim);font-size:12px;letter-spacing:.1em">Aucun avis pour le moment</div>';
+    return;
+  }
+  document.getElementById('rv-list').innerHTML=list.map(r=>{
+    const pos = Array.isArray(r.pos) ? r.pos : (r.pos ? [r.pos] : []);
+    const neg = Array.isArray(r.neg) ? r.neg : (r.neg ? [r.neg] : []);
+    const stars = r.stars||5;
+    const text = r.text || r.comment || '';
+    return `
+    <div class="rv ${r.unread?'unread':''}" id="rv${r.id}">
+      <div class="rv-top">
+        <div>
+          <div class="rv-auth">${r.name||'Client'} <span class="rv-code">${r.code||''}</span> ${r.unread?'<span style="font-size:9px;color:var(--gold);letter-spacing:.12em;margin-left:6px">NOUVEAU</span>':''}</div>
+          <div class="rv-meta">${r.date||''} · ${r.type||''}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="rv-stars">${'★'.repeat(stars)}${'☆'.repeat(5-stars)}</div>
+          <div class="rv-badge">${r.type||''}</div>
+        </div>
+      </div>
+      <div class="rv-txt">${text}</div>
+      <div class="rv-tags">
+        ${pos.map(t=>`<span class="rt pos">+ ${t}</span>`).join('')}
+        ${neg.map(t=>`<span class="rt neg">↑ ${t}</span>`).join('')}
+      </div>
+      <div class="reply-area">
+        ${r.reply?`<div class="existing-reply"><div class="er-lbl">Votre réponse</div>${r.reply}</div>`:''}
+        <textarea class="reply-box" id="rep${r.id}" placeholder="Répondre à ${r.name||'ce client'}…">${r.reply||''}</textarea>
+        <div class="ra">
+          <button class="btn-g" onclick="saveRep(${r.id})"><span>${r.reply?'Modifier':'Répondre'}</span></button>
+          <button class="btn-wa" onclick="waRep('${r.name||''}',${r.id})">WhatsApp</button>
+          <button class="btn-gh" onclick="markRead(${r.id})">Marquer lu</button>
+          <button class="btn-gh" onclick="deleteRv(${r.id})" style="border-color:rgba(201,76,76,.35);color:#C94C4C">🗑 Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+
+function deleteRv(id){
+  if(!confirm('Supprimer cet avis ?')) return;
+  const idx = REVIEWS.findIndex(x=>x.id===id);
+  if(idx>-1){ REVIEWS.splice(idx,1); updateNB(); }
+  renderRv(curF==='all'?REVIEWS:REVIEWS.filter(r=>curF==='5'?r.stars===5:curF==='unread'?r.unread:curF==='noreply'?!r.reply:curF==='studio'?r.type==='Studio':r.type==='Appartement'));
+  saveReviewsToJsonBin();
+  toastMsg('Avis supprimé ✦');
+}
+function saveRep(id){
+  const txt=document.getElementById('rep'+id).value;if(!txt.trim())return;
+  const r=REVIEWS.find(x=>x.id===id);r.reply=txt;r.unread=false;updateNB();
+  renderRv(curF==='all'?REVIEWS:REVIEWS.filter(r=>curF==='5'?r.stars===5:curF==='unread'?r.unread:curF==='noreply'?!r.reply:curF==='studio'?r.type==='Studio':r.type==='Appartement'));
+  saveReviewsToJsonBin();
+  toastMsg('Réponse sauvegardée ✦');
+}
+function markRead(id){const r=REVIEWS.find(x=>x.id===id);r.unread=false;updateNB();document.getElementById('rv'+id).classList.remove('unread');toastMsg('Marqué comme lu');}
+function waRep(name,id){const txt=encodeURIComponent(document.getElementById('rep'+id).value||`Bonjour ${name}, merci pour votre avis sur LB Prestige Appart !`);window.open('https://wa.me/?text='+txt,'_blank');}
+function updateNB(){const n=REVIEWS.filter(r=>r.unread).length;const nb=document.getElementById('nb');nb.textContent=n;nb.style.display=n?'flex':'none';const nb2=document.getElementById('nb2');if(nb2){nb2.textContent=n;nb2.style.display=n?'flex':'none';}}
+
+// ─── CODES ───
+function buildCodes(){
+  document.getElementById('codes-grid').innerHTML=CODES.map(c=>`
+    <div class="code-card ${c.status==='used'?'used':''}">
+      <div class="code-val">${c.code}</div>
+      <div class="code-name">${c.client||'—'}</div>
+      <span class="code-status ${c.status}">${c.status==='used'?'Utilisé':c.status==='active'?'Disponible':'Nouveau'}</span>
+    </div>`).join('');
+}
+
+function createCode(){
+  const code=document.getElementById('new-code').value.trim().toUpperCase();
+  const client=document.getElementById('new-client').value.trim();
+  if(!code){toastMsg('Saisissez un code');return;}
+  if(CODES.find(c=>c.code===code)){toastMsg('Ce code existe déjà');return;}
+  CODES.unshift({code,client,status:'new'});
+  buildCodes();
+  document.getElementById('new-code').value='';
+  document.getElementById('new-client').value='';
+  toastMsg('Code '+code+' créé ✦');
+}
+
+// ─── MESSAGES ───
+function setTpl(key){
+  const code=document.getElementById('msg-code').value||'[CODE]';
+  document.getElementById('msg-body').value=TPLS[key].replace('[CODE]',code);
+}
+function sendWA(){
+  const body=document.getElementById('msg-body').value;
+  if(!body){toastMsg('Rédigez un message');return;}
+  window.open('https://wa.me/?text='+encodeURIComponent(body),'_blank');
+}
+
+// ─── STATS ───
+function buildStats(){
+  document.getElementById('type-bars').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>Studio</span><span>43%</span></div><div style="height:3px;background:var(--dark5)"><div style="width:43%;height:100%;background:var(--gold-dim)"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>Appartement</span><span>57%</span></div><div style="height:3px;background:var(--dark5)"><div style="width:57%;height:100%;background:var(--gold)"></div></div></div>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--text-muted);line-height:1.8">Note studio : <strong style="color:var(--text)">4.5</strong> &nbsp;·&nbsp; Note appart : <strong style="color:var(--text)">4.8</strong></div>`;
+
+  const STR=[['Propreté',18],['Décoration',15],['Emplacement',14],['Wifi rapide',11],['Confort',10],['Parking',8]];
+  document.getElementById('str-bars').innerHTML=STR.map(([n,v])=>`<div class="sr"><span class="sr-n">${n}</span><div class="sr-t"><div class="sr-f" style="width:${Math.round(v/18*100)}%;background:var(--green)"></div></div><span class="sr-v" style="color:#4CAF7D">${v}</span></div>`).join('');
+
+  const IMP=[['Climatisation',5],['Literie',4],['Cuisine',3],['Eau chaude',2]];
+  document.getElementById('imp-bars').innerHTML=IMP.map(([n,v])=>`<div class="sr"><span class="sr-n">${n}</span><div class="sr-t"><div class="sr-f" style="width:${Math.round(v/5*100)}%;background:rgba(201,168,76,.5)"></div></div><span class="sr-v" style="color:var(--text-muted)">${v}</span></div>`).join('');
+
+  const EVO=[4.1,4.2,4.3,4.4,4.5,4.7,4.7];const EM=['Oct','Nov','Déc','Jan','Fév','Mar','Avr'];
+  document.getElementById('evo').innerHTML=EVO.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><span style="font-size:9px;color:var(--gold)">${v.toFixed(1)}</span><div style="width:100%;background:rgba(201,168,76,.1);border-top:1px solid var(--gold-dim);height:${Math.round(v/5*80)}px"></div><span style="font-size:9px;color:var(--text-dim)">${EM[i]}</span></div>`).join('');
+}
+
+// ─── TOAST ───
+function toastMsg(msg){const t=document.getElementById('t');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
