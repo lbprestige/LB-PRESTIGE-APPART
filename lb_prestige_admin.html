@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LB Prestige Appart — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #A07830;
+    --black: #0A0A0A;
+    --black-2: #111111;
+    --black-3: #1A1A1A;
+    --black-4: #222222;
+    --white: #F5F0E8;
+    --white-dim: #C8BFA8;
+    --red: #e06060;
+    --green: #80c880;
+    --radius: 12px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.6);
+    --nav-h: 64px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+    padding-bottom: var(--nav-h);
+  }
+
+  /* ===== LOGIN ===== */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at top, #1a1500 0%, var(--black) 60%);
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .login-logo .lb-big {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--black);
+    margin: 0 auto 12px;
+  }
+
+  .login-logo h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--white);
+  }
+
+  .login-logo p {
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-top: 4px;
+  }
+
+  .login-card {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+  }
+
+  .login-card h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .field-group { margin-bottom: 14px; }
+
+  .field-group label {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .field-group input, .field-group select, .field-group textarea {
+    width: 100%;
+    background: var(--black-4);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-group input:focus, .field-group textarea:focus { border-color: var(--gold); }
+  .field-group input::placeholder { color: rgba(200,191,168,0.35); }
+  .field-group textarea { resize: vertical; min-height: 80px; }
+
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 0.76rem;
+    color: var(--white-dim);
+    cursor: pointer;
+  }
+
+  .remember-row input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; }
+
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn-primary:active { transform: scale(0.98); opacity: 0.85; }
+
+  #loginError {
+    color: var(--red);
+    font-size: 0.76rem;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ===== APP ===== */
+  #appScreen { display: none; }
+
+  .app-header {
+    background: linear-gradient(180deg, var(--black-2) 0%, var(--black) 100%);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .app-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .app-header .logo .lb-sq {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--black);
+  }
+
+  .app-header .logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .app-header .logo-text span {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sync-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.64rem;
+    color: var(--white-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .sync-badge .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .btn-logout {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--white-dim);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-h);
+    background: var(--black-2);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    z-index: 20;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    padding: 8px 4px;
+    position: relative;
+  }
+
+  .nav-item .nav-icon { font-size: 1.2rem; color: rgba(200,191,168,0.4); transition: color 0.2s; }
+  .nav-item .nav-label { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(200,191,168,0.4); transition: color 0.2s; }
+
+  .nav-item.active .nav-icon,
+  .nav-item.active .nav-label { color: var(--gold); }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 0 0 2px 2px;
+  }
+
+  .nav-badge {
+    position: absolute;
+    top: 6px;
+    right: calc(50% - 18px);
+    background: var(--red);
+    color: white;
+    font-size: 0.55rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  /* ===== PANELS ===== */
+  .panel { display: none; padding: 0 16px 20px; max-width: 600px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  .panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--gold);
+    padding: 20px 0 4px;
+  }
+
+  .panel-sub {
+    font-size: 0.7rem;
+    color: var(--white-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* ===== STATS CARDS ===== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    text-align: center;
+  }
+
+  .stat-card .sv {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-card .sl {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-top: 4px;
+  }
+
+  .stat-card .ss {
+    font-size: 0.72rem;
+    color: rgba(200,191,168,0.5);
+    margin-top: 2px;
+  }
+
+  /* ===== REVIEWS ===== */
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+  }
+
+  .filter-tabs::-webkit-scrollbar { display: none; }
+
+  .ftab {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 16px;
+    padding: 6px 14px;
+    font-size: 0.7rem;
+    color: var(--white-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .ftab.active {
+    background: rgba(201,168,76,0.12);
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+
+  .review-card {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .review-card.unread { border-left: 3px solid var(--gold); }
+
+  .review-card .rv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .review-card .rv-name { font-weight: 500; font-size: 0.85rem; }
+
+  .review-card .rv-stars { color: var(--gold); font-size: 0.85rem; }
+
+  .review-card .rv-meta {
+    font-size: 0.7rem;
+    color: rgba(200,191,168,0.5);
+    margin-bottom: 6px;
+  }
+
+  .review-card .rv-comment {
+    font-size: 0.8rem;
+    color: var(--white-dim);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .review-card .rv-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .rv-tag {
+    font-size: 0.65rem;
+    padding: 3px 9px;
+    border-radius: 10px;
+    border: 1px solid;
+  }
+
+  .rv-tag.pos { border-color: rgba(128,200,128,0.3); color: var(--green); background: rgba(128,200,128,0.06); }
+  .rv-tag.neg { border-color: rgba(224,96,96,0.3); color: var(--red); background: rgba(224,96,96,0.06); }
+
+  .reply-box {
+    background: var(--black-4);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 0.78rem;
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .reply-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .reply-input-row input {
+    flex: 1;
+    background: var(--black-4);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    outline: none;
+  }
+
+  .btn-sm {
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .btn-sm:active { background: rgba(201,168,76,0.2); }
+
+  .btn-sm.danger { color: var(--red); border-color: rgba(224,96,96,0.25); }
+
+  /* ===== CODES ===== */
+  .create-code-box {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .create-code-box h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+
+  .code-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .code-row input {
+    flex: 1;
+    min-width: 120px;
+    background: var(--black-4);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    outline: none;
+  }
+
+  .code-row input:focus { border-color: var(--gold); }
+
+  .codes-list { }
+
+  .code-item {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.1);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .code-item .ci-info { flex: 1; }
+
+  .code-item .ci-name { font-size: 0.85rem; font-weight: 500; }
+  .code-item .ci-code { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.08em; margin-top: 2px; font-family: monospace; }
+  .code-item .ci-phone { font-size: 0.7rem; color: var(--white-dim); }
+
+  .code-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  /* ===== RÈGLEMENT SUIVI ===== */
+  .sign-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+  }
+
+  .sign-table th {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: left;
+    padding: 0 12px 6px;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+
+  .sign-table td {
+    background: var(--black-3);
+    padding: 12px;
+    font-size: 0.78rem;
+    color: var(--white-dim);
+    border: 1px solid rgba(201,168,76,0.08);
+  }
+
+  .sign-table tr td:first-child { border-radius: 8px 0 0 8px; }
+  .sign-table tr td:last-child { border-radius: 0 8px 8px 0; }
+
+  .sign-table .sn-name { color: var(--white); font-weight: 500; }
+
+  .sign-empty {
+    text-align: center;
+    padding: 30px;
+    color: var(--white-dim);
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+
+  /* ===== MESSAGES ===== */
+  .msg-templates {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+  }
+
+  .msg-templates::-webkit-scrollbar { display: none; }
+
+  .msg-tpl {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 16px;
+    padding: 7px 14px;
+    font-size: 0.72rem;
+    color: var(--white-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .msg-tpl.active {
+    background: rgba(201,168,76,0.1);
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+
+  .compose-box {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .compose-box textarea {
+    width: 100%;
+    background: var(--black-4);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.82rem;
+    resize: vertical;
+    min-height: 110px;
+    outline: none;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+
+  .compose-box textarea:focus { border-color: var(--gold); }
+
+  .wa-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #128C7E, #25D366);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .wa-btn:active { transform: scale(0.98); opacity: 0.85; }
+
+  .wa-welcome-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #075E54, #128C7E);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+
+  .wa-welcome-btn:active { transform: scale(0.98); opacity: 0.85; }
+
+  /* ===== PARAMS ===== */
+  .param-section {
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .param-section h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .save-btn {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+
+  .save-btn:active { transform: scale(0.98); opacity: 0.85; }
+
+  .test-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    padding: 10px 18px;
+    color: var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.74rem;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+
+  .copy-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--gold-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.74rem;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .copy-link-btn:active { background: rgba(201,168,76,0.08); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+  }
+
+  .toggle-row:last-child { border-bottom: none; }
+
+  .toggle-info .ti-title { font-size: 0.82rem; color: var(--white); }
+  .toggle-info .ti-desc { font-size: 0.7rem; color: var(--white-dim); margin-top: 2px; }
+
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: rgba(201,168,76,0.4); border-color: var(--gold); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--white-dim);
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .toggle.on::after {
+    transform: translateX(20px);
+    background: var(--gold);
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent);
+    margin: 16px 0;
+  }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--black-3);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 20px;
+    padding: 10px 22px;
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    z-index: 999;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+
+  .loading-text {
+    text-align: center;
+    color: var(--white-dim);
+    font-size: 0.8rem;
+    padding: 20px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-logo">
+    <div class="lb-big">LB</div>
+    <h1>Prestige Appart</h1>
+    <p>Kotto · Carrefour des Roses · Douala</p>
+  </div>
+  <div class="login-card">
+    <h2>Espace Propriétaire</h2>
+    <div class="field-group">
+      <label>Identifiant</label>
+      <input type="text" id="loginUser" placeholder="Identifiant admin" autocomplete="username">
+    </div>
+    <div class="field-group">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPass" placeholder="Mot de passe" autocomplete="current-password">
+    </div>
+    <label class="remember-row">
+      <input type="checkbox" id="rememberMe"> Se souvenir de moi (7 jours)
+    </label>
+    <button class="btn-primary" onclick="doAdminLogin()">Accéder à mon espace — ✦</button>
+    <div id="loginError">Identifiants incorrects. Veuillez réessayer.</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="appScreen">
+  <div class="app-header">
+    <div class="logo">
+      <div class="lb-sq">LB</div>
+      <div class="logo-text">
+        LB Prestige
+        <span>Administration</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="sync-badge">
+        <div class="dot"></div>
+        JSONBin
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- PANELS -->
+  <div id="panelDashboard" class="panel active">
+    <div class="panel-title">Tableau de bord</div>
+    <div class="panel-sub">Vue d'ensemble de votre activité</div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="sv" id="statTotal">—</div>
+        <div class="sl">Avis total</div>
+        <div class="ss">Depuis le début</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="statAvg">—</div>
+        <div class="sl">Note moyenne</div>
+        <div class="ss">Sur 5 étoiles</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="statUnread">—</div>
+        <div class="sl">Non lus</div>
+        <div class="ss">À traiter</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="statNoReply">—</div>
+        <div class="sl">Sans réponse</div>
+        <div class="ss">En attente</div>
+      </div>
+    </div>
+
+    <div style="font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Derniers avis</div>
+    <div id="recentReviews"><div class="loading-text">Chargement…</div></div>
+  </div>
+
+  <div id="panelReviews" class="panel">
+    <div class="panel-title">Avis clients</div>
+    <div class="panel-sub">Consultez et répondez à chaque avis reçu</div>
+
+    <div class="filter-tabs">
+      <span class="ftab active" onclick="filterReviews('all',this)">TOUS (<span id="cntAll">0</span>)</span>
+      <span class="ftab" onclick="filterReviews('unread',this)">NON LUS (<span id="cntUnread">0</span>)</span>
+      <span class="ftab" onclick="filterReviews('noreply',this)">SANS RÉPONSE (<span id="cntNoReply">0</span>)</span>
+      <span class="ftab" onclick="filterReviews('5',this)">★★★★★</span>
+      <span class="ftab" onclick="filterReviews('studio',this)">STUDIO</span>
+      <span class="ftab" onclick="filterReviews('appart',this)">APPARTEMENT</span>
+    </div>
+
+    <div id="reviewsList"><div class="loading-text">Chargement des avis…</div></div>
+  </div>
+
+  <div id="panelCodes" class="panel">
+    <div class="panel-title">Codes clients</div>
+    <div class="panel-sub">Gérez les accès de vos clients</div>
+
+    <div class="create-code-box">
+      <h3>✦ Créer un nouveau code</h3>
+      <div class="field-group">
+        <label>Nom du client</label>
+        <input type="text" id="newCodeName" placeholder="Ex: Marie Dupont">
+      </div>
+      <div class="field-group">
+        <label>Téléphone (WhatsApp)</label>
+        <input type="tel" id="newCodePhone" placeholder="Ex: +237 6XX XXX XXX">
+      </div>
+      <div class="code-row">
+        <input type="text" id="newCodeValue" placeholder="Code (auto-généré ou manuel)">
+        <button class="btn-sm" onclick="generateCode()">⟳ Générer</button>
+        <button class="btn-primary" style="width:auto;padding:10px 18px;font-size:0.74rem;" onclick="createCode()">+ Créer</button>
+      </div>
+    </div>
+
+    <div style="font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Codes actifs</div>
+    <div id="codesList"><div class="loading-text">Chargement…</div></div>
+  </div>
+
+  <!-- RÈGLEMENT -->
+  <div id="panelReglement" class="panel">
+    <div class="panel-title">Suivi Règlement</div>
+    <div class="panel-sub">Confirmations règlement intérieur</div>
+
+    <div style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:14px;margin-bottom:18px;font-size:0.8rem;color:var(--white-dim);line-height:1.6;">
+      📋 Ce tableau liste tous les clients ayant approuvé le règlement intérieur. Les nouvelles signatures apparaissent <strong style="color:var(--gold);">en temps réel</strong>.
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="save-btn" style="flex:1;" onclick="loadSignatures()">🔄 Actualiser</button>
+      <button class="btn-sm" onclick="exportSignatures()">📥 Exporter CSV</button>
+    </div>
+
+    <div id="signaturesContainer">
+      <div class="loading-text">Chargement des signatures…</div>
+    </div>
+  </div>
+
+  <div id="panelMessages" class="panel">
+    <div class="panel-title">Messages WhatsApp</div>
+    <div class="panel-sub">Envoyez des messages à vos clients</div>
+
+    <!-- Sélecteur client rapide -->
+    <div class="param-section" style="margin-bottom:16px;">
+      <h3>👤 Sélectionner un client</h3>
+      <div class="field-group" style="margin-bottom:10px;">
+        <label>Client (depuis vos codes actifs)</label>
+        <select id="msgClientSelect" onchange="selectClientForMsg(this.value)" style="width:100%;background:var(--black-4);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px 14px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.85rem;outline:none;">
+          <option value="">— Choisir un client —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-sm" onclick="quickSendWA('bienvenue')">📲 Bienvenue</button>
+        <button class="btn-sm" onclick="quickSendWA('confirm')">✅ Confirmation</button>
+        <button class="btn-sm" onclick="quickSendWA('avis')">⭐ Demander avis</button>
+        <button class="btn-sm" onclick="quickSendWA('merci')">🙏 Remerciement</button>
+        <button class="btn-sm" onclick="quickSendWA('promo')">🎁 Promo</button>
+      </div>
+    </div>
+
+    <!-- Composer message manuel -->
+    <div style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">✦ Ou composer manuellement</div>
+
+    <div class="msg-templates">
+      <span class="msg-tpl active" onclick="setTemplate('bienvenue',this)">Bienvenue</span>
+      <span class="msg-tpl" onclick="setTemplate('merci',this)">Remerciement</span>
+      <span class="msg-tpl" onclick="setTemplate('avis',this)">Demander avis</span>
+      <span class="msg-tpl" onclick="setTemplate('promo',this)">Promotion</span>
+      <span class="msg-tpl" onclick="setTemplate('confirm',this)">Confirmation</span>
+    </div>
+
+    <div class="compose-box">
+      <div class="field-group">
+        <label>Code client (optionnel)</label>
+        <input type="text" id="msgClientCode" placeholder="Laissez vide pour message général">
+      </div>
+      <div class="field-group">
+        <label>Numéro WhatsApp du client</label>
+        <input type="tel" id="msgPhone" placeholder="+237 6XX XXX XXX">
+      </div>
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Message</label>
+        <textarea id="msgText" placeholder="Votre message…"></textarea>
+      </div>
+    </div>
+
+    <button class="wa-btn" onclick="sendWhatsApp()">
+      <span>📲</span> Envoyer via WhatsApp
+    </button>
+  </div>
+
+  <div id="panelConfig" class="panel">
+    <div class="panel-title">Configuration</div>
+    <div class="panel-sub">Paramètres & contenu de l'application</div>
+
+    <!-- JSONBin -->
+    <div class="param-section">
+      <h3>☁️ JSONBin — Stockage</h3>
+      <div class="field-group">
+        <label>Bin ID</label>
+        <input type="text" id="cfgBinId" placeholder="ID de votre bin">
+      </div>
+      <div class="field-group">
+        <label>Clé API (X-Master-Key)</label>
+        <input type="password" id="cfgApiKey" placeholder="$2a$10$…">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button class="save-btn" onclick="saveJsonBin()">💾 Sauvegarder</button>
+        <button class="test-btn" onclick="testConnection()">Tester</button>
+      </div>
+      <button class="copy-link-btn" onclick="copyClientLink()">🔗 Copier lien client</button>
+    </div>
+
+    <!-- Contenu Wi-Fi -->
+    <div class="param-section">
+      <h3>📶 Wi-Fi</h3>
+      <div class="field-group">
+        <label>Nom du réseau (SSID)</label>
+        <input type="text" id="cfgWifiName" placeholder="Nom du réseau Wi-Fi">
+      </div>
+      <div class="field-group">
+        <label>Mot de passe Wi-Fi</label>
+        <input type="text" id="cfgWifiPass" placeholder="Mot de passe">
+      </div>
+    </div>
+
+    <!-- Netflix -->
+    <div class="param-section">
+      <h3>📺 Netflix</h3>
+      <div class="field-group">
+        <label>Email Netflix</label>
+        <input type="email" id="cfgNetflixEmail" placeholder="email@exemple.com">
+      </div>
+      <div class="field-group">
+        <label>Mot de passe Netflix</label>
+        <input type="text" id="cfgNetflixPass" placeholder="Mot de passe Netflix">
+      </div>
+      <div class="field-group">
+        <label>Instructions TV</label>
+        <textarea id="cfgNetflixInstructions" placeholder="Instructions pour allumer la TV et accéder à Netflix…"></textarea>
+      </div>
+    </div>
+
+    <!-- Parking -->
+    <div class="param-section">
+      <h3>🚗 Parking</h3>
+      <div class="field-group">
+        <label>Numéro de place</label>
+        <input type="text" id="cfgParkingPlace" placeholder="Ex: Place N° 07">
+      </div>
+      <div class="field-group">
+        <label>Instructions d'accès</label>
+        <textarea id="cfgParkingInstructions" placeholder="Instructions parking, code d'accès, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- Règlement intérieur -->
+    <div class="param-section">
+      <h3>📋 Règlement Intérieur</h3>
+      <div class="field-group">
+        <label>Texte du règlement (HTML autorisé)</label>
+        <textarea id="cfgReglement" style="min-height:200px;" placeholder="Saisissez le texte du règlement intérieur…"></textarea>
+      </div>
+    </div>
+
+    <!-- Établissement -->
+    <div class="param-section">
+      <h3>🏠 Établissement</h3>
+      <div class="field-group">
+        <label>Nom</label>
+        <input type="text" id="cfgNom" placeholder="Nom de l'établissement">
+      </div>
+      <div class="field-group">
+        <label>Adresse</label>
+        <input type="text" id="cfgAdresse" placeholder="Adresse complète">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field-group">
+          <label>Studio / nuit</label>
+          <input type="text" id="cfgStudioPrice" placeholder="Ex: 25 000 FCFA">
+        </div>
+        <div class="field-group">
+          <label>Appart / nuit</label>
+          <input type="text" id="cfgAppartPrice" placeholder="Ex: 35 000 FCFA">
+        </div>
+      </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="param-section">
+      <h3>🔐 Sécurité</h3>
+      <div class="field-group">
+        <label>Nouvel identifiant</label>
+        <input type="text" id="cfgNewUser" placeholder="Nouvel identifiant admin">
+      </div>
+      <div class="field-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="cfgNewPass" placeholder="Nouveau mot de passe">
+      </div>
+      <button class="save-btn" onclick="updateCredentials()">Mettre à jour</button>
+    </div>
+
+    <button class="btn-primary" onclick="saveAllConfig()">💾 Enregistrer toute la configuration</button>
+
+    <!-- Notifications -->
+    <div class="param-section" style="margin-top:16px;">
+      <h3>🔔 Notifications</h3>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="ti-title">Alerte nouvel avis</div>
+          <div class="ti-desc">Notification à chaque avis reçu</div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="ti-title">Rappel sans réponse</div>
+          <div class="ti-desc">Alerte après 48h sans réponse</div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="ti-title">Rapport mensuel</div>
+          <div class="ti-desc">Résumé de performance mensuel</div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchPanel('Dashboard',this)">
+      <span class="nav-icon">◈</span>
+      <span class="nav-label">Accueil</span>
+    </div>
+    <div class="nav-item" onclick="switchPanel('Reviews',this)">
+      <span class="nav-icon">✦</span>
+      <span class="nav-label">Avis</span>
+      <span class="nav-badge" id="navBadge" style="display:none;">0</span>
+    </div>
+    <div class="nav-item" onclick="switchPanel('Codes',this)">
+      <span class="nav-icon">⊛</span>
+      <span class="nav-label">Codes</span>
+    </div>
+    <div class="nav-item" onclick="switchPanel('Reglement',this)">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Règlement</span>
+      <span class="nav-badge" id="reglementBadge" style="display:none;">0</span>
+    </div>
+    <div class="nav-item" onclick="switchPanel('Messages',this)">
+      <span class="nav-icon">◉</span>
+      <span class="nav-label">Messages</span>
+    </div>
+    <div class="nav-item" onclick="switchPanel('Config',this)">
+      <span class="nav-icon">⊙</span>
+      <span class="nav-label">Config</span>
+    </div>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ========== CONFIG ==========
+let JSONBIN_ID = localStorage.getItem('lb_bin_id') || '6785b5dcacd3cb34a8b3edd9';
+let JSONBIN_KEY = localStorage.getItem('lb_bin_key') || '$2a$10$43LNnZeebsdi37UiTugFuceUndIIT9oqJLU7qUM0ZN5dOrfA8kR2gC';
+let ADMIN_USER = localStorage.getItem('lb_admin_user') || 'LIONEL BATISTON';
+let ADMIN_PASS = localStorage.getItem('lb_admin_pass') || 'admin';
+const CLIENT_URL = 'https://lbprestige.github.io/LB-PRESTIGE-APPART/lb_prestige_client.html';
+
+let currentFilter = 'all';
+let allReviews = [];
+let allCodes = {};
+
+// ========== LOGIN ==========
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('lb_admin_session');
+  if (saved) {
+    const s = JSON.parse(saved);
+    if (s.expires > Date.now()) {
+      showApp();
+      return;
+    }
+  }
+
+  const binId = localStorage.getItem('lb_bin_id');
+  const binKey = localStorage.getItem('lb_bin_key');
+  if (binId) { JSONBIN_ID = binId; document.getElementById('cfgBinId').value = binId; }
+  if (binKey) { JSONBIN_KEY = binKey; document.getElementById('cfgApiKey').value = binKey; }
+});
+
+function doAdminLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const remember = document.getElementById('rememberMe').checked;
+
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    if (remember) {
+      localStorage.setItem('lb_admin_session', JSON.stringify({ expires: Date.now() + 7*24*60*60*1000 }));
+    }
+    showApp();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doAdminLogin();
+});
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  loadData();
+  loadConfigForm();
+}
+
+function doLogout() {
+  localStorage.removeItem('lb_admin_session');
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// ========== NAV ==========
+function switchPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel' + name).classList.add('active');
+  el.classList.add('active');
+
+  if (name === 'Reviews') markAllRead();
+  if (name === 'Reglement') {
+    loadSignatures();
+    // Marquer signatures comme vues
+    fetchRecord().then(rec => {
+      localStorage.setItem('lb_seen_sigs', (rec.signatures || []).length);
+      document.getElementById('reglementBadge').style.display = 'none';
+    }).catch(()=>{});
+  }
+}
+
+// ========== DATA ==========
+async function fetchRecord() {
+  const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
+    headers: { 'X-Master-Key': JSONBIN_KEY }
+  });
+  const d = await r.json();
+  return d.record;
+}
+
+async function saveRecord(rec) {
+  await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+    body: JSON.stringify(rec)
+  });
+}
+
+async function loadData() {
+  try {
+    const rec = await fetchRecord();
+    allReviews = rec.reviews || [];
+    allCodes = rec.codes || {};
+
+    const total = allReviews.length;
+    const unread = allReviews.filter(r => !r.read).length;
+    const noreply = allReviews.filter(r => !r.reply).length;
+    const avg = total ? (allReviews.reduce((s,r) => s + (r.rating||0), 0) / total).toFixed(1) : '—';
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statAvg').textContent = avg;
+    document.getElementById('statUnread').textContent = unread;
+    document.getElementById('statNoReply').textContent = noreply;
+
+    document.getElementById('cntAll').textContent = total;
+    document.getElementById('cntUnread').textContent = unread;
+    document.getElementById('cntNoReply').textContent = noreply;
+
+    if (unread > 0) {
+      const badge = document.getElementById('navBadge');
+      badge.style.display = 'flex';
+      badge.textContent = unread;
+    }
+
+    // Badge nouvelles signatures règlement
+    const lastSeenSigs = parseInt(localStorage.getItem('lb_seen_sigs') || '0');
+    const totalSigs = (rec.signatures || []).length;
+    const newSigs = totalSigs - lastSeenSigs;
+    if (newSigs > 0) {
+      const rb = document.getElementById('reglementBadge');
+      rb.style.display = 'flex';
+      rb.textContent = newSigs;
+    }
+
+    // Remplir le sélecteur de clients dans Messages
+    const sel = document.getElementById('msgClientSelect');
+    sel.innerHTML = '<option value="">— Choisir un client —</option>';
+    Object.entries(allCodes).forEach(([code, info]) => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.dataset.phone = info.phone || '';
+      opt.dataset.name = info.name || 'Client';
+      opt.textContent = `${info.name || 'Client'}${info.phone ? ' · ' + info.phone : ''}`;
+      sel.appendChild(opt);
+    });
+
+    renderReviews(allReviews.slice(0, 5), 'recentReviews');
+    renderReviews(allReviews, 'reviewsList');
+    renderCodes(allCodes);
+
+  } catch(e) {
+    console.log('Load error:', e);
+    showToast('Erreur de chargement');
+  }
+}
+
+function renderReviews(reviews, containerId) {
+  const container = document.getElementById(containerId);
+  if (!reviews.length) {
+    container.innerHTML = '<div class="loading-text">Aucun avis pour le moment.</div>';
+    return;
+  }
+
+  container.innerHTML = reviews.map(rv => `
+    <div class="review-card ${!rv.read ? 'unread' : ''}" id="rv_${rv.id}">
+      <div class="rv-header">
+        <div>
+          <div class="rv-name">${rv.clientName || 'Client'}</div>
+          <div class="rv-meta">${rv.date || ''} · ${rv.logement || ''} · ${rv.motif || ''}</div>
+        </div>
+        <div class="rv-stars">${'★'.repeat(rv.rating||0)}${'☆'.repeat(5-(rv.rating||0))}</div>
+      </div>
+      ${rv.positifs?.length ? `<div class="rv-tags">${rv.positifs.map(t=>`<span class="rv-tag pos">✓ ${t}</span>`).join('')}</div>` : ''}
+      ${rv.negatifs?.length ? `<div class="rv-tags">${rv.negatifs.map(t=>`<span class="rv-tag neg">✗ ${t}</span>`).join('')}</div>` : ''}
+      ${rv.comment ? `<div class="rv-comment">"${rv.comment}"</div>` : ''}
+      ${rv.reply ? `<div class="reply-box">Votre réponse : ${rv.reply}</div>` : ''}
+      <div class="reply-input-row">
+        <input type="text" id="reply_${rv.id}" placeholder="Répondre à cet avis…" value="">
+        <button class="btn-sm" onclick="sendReply('${rv.id}')">Envoyer</button>
+        <button class="btn-sm danger" onclick="deleteReview('${rv.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function sendReply(id) {
+  const val = document.getElementById('reply_' + id).value.trim();
+  if (!val) return;
+
+  try {
+    const rec = await fetchRecord();
+    const idx = rec.reviews.findIndex(r => r.id === id);
+    if (idx >= 0) {
+      rec.reviews[idx].reply = val;
+      rec.reviews[idx].read = true;
+    }
+    await saveRecord(rec);
+    allReviews = rec.reviews;
+    renderReviews(allReviews, 'reviewsList');
+    showToast('✓ Réponse envoyée');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm('Supprimer cet avis ?')) return;
+  try {
+    const rec = await fetchRecord();
+    rec.reviews = rec.reviews.filter(r => r.id !== id);
+    await saveRecord(rec);
+    allReviews = rec.reviews;
+    renderReviews(allReviews, 'reviewsList');
+    renderReviews(allReviews.slice(0,5), 'recentReviews');
+    showToast('✓ Avis supprimé');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+async function markAllRead() {
+  try {
+    const rec = await fetchRecord();
+    rec.reviews.forEach(r => r.read = true);
+    await saveRecord(rec);
+    document.getElementById('navBadge').style.display = 'none';
+  } catch(e) {}
+}
+
+function filterReviews(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  let filtered = [...allReviews];
+  if (f === 'unread') filtered = filtered.filter(r => !r.read);
+  else if (f === 'noreply') filtered = filtered.filter(r => !r.reply);
+  else if (f === '5') filtered = filtered.filter(r => r.rating === 5);
+  else if (f === 'studio') filtered = filtered.filter(r => r.logement === 'Studio');
+  else if (f === 'appart') filtered = filtered.filter(r => r.logement === 'Appartement');
+
+  renderReviews(filtered, 'reviewsList');
+}
+
+// ========== CODES ==========
+function renderCodes(codes) {
+  const container = document.getElementById('codesList');
+  const entries = Object.entries(codes);
+  if (!entries.length) {
+    container.innerHTML = '<div class="loading-text">Aucun code actif. Créez votre premier code client.</div>';
+    return;
+  }
+
+  container.innerHTML = entries.map(([code, info]) => `
+    <div class="code-item">
+      <div class="ci-info">
+        <div class="ci-name">${info.name || 'Client'}</div>
+        <div class="ci-code">${code.substring(0,20)}…</div>
+        ${info.phone ? `<div class="ci-phone">📱 ${info.phone}</div>` : ''}
+      </div>
+      <div class="code-actions">
+        <button class="btn-sm" onclick="sendWelcomeWA('${code}', '${info.phone || ''}', '${info.name || 'Client'}')">📲 Accueil</button>
+        <button class="btn-sm" onclick="copyCodeLink('${code}')">🔗</button>
+        <button class="btn-sm danger" onclick="deleteCode('${code}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let code = 'LB-';
+  for (let i = 0; i < 10; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('newCodeValue').value = code;
+}
+
+async function createCode() {
+  const name = document.getElementById('newCodeName').value.trim();
+  const phone = document.getElementById('newCodePhone').value.trim();
+  const code = document.getElementById('newCodeValue').value.trim();
+
+  if (!name || !code) {
+    showToast('⚠ Nom et code requis');
+    return;
+  }
+
+  try {
+    const rec = await fetchRecord();
+    if (!rec.codes) rec.codes = {};
+    rec.codes[code] = { name, phone, createdAt: new Date().toLocaleDateString('fr-FR') };
+    await saveRecord(rec);
+    allCodes = rec.codes;
+    renderCodes(allCodes);
+    document.getElementById('newCodeName').value = '';
+    document.getElementById('newCodePhone').value = '';
+    document.getElementById('newCodeValue').value = '';
+    showToast('✓ Code créé');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+async function deleteCode(code) {
+  if (!confirm('Supprimer ce code ?')) return;
+  try {
+    const rec = await fetchRecord();
+    delete rec.codes[code];
+    await saveRecord(rec);
+    allCodes = rec.codes;
+    renderCodes(allCodes);
+    showToast('✓ Code supprimé');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+function copyCodeLink(code) {
+  const url = `${CLIENT_URL}?key=${encodeURIComponent(code)}`;
+  navigator.clipboard.writeText(url).then(() => showToast('✓ Lien copié'))
+    .catch(() => { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('✓ Lien copié'); });
+}
+
+function sendWelcomeWA(code, phone, name) {
+  const url = `${CLIENT_URL}?key=${encodeURIComponent(code)}`;
+  const msg = `🌟 Bienvenue au *LB Prestige Cosy Appart*, ${name} !\n\nVotre espace client personnel est prêt :\n🔗 ${url}\n\nVotre code d'accès : *${code}*\n\nN'hésitez pas à consulter le guide d'accueil (Wi-Fi, Netflix, Parking, Cuisine) et à approuver le règlement intérieur.\n\nBon séjour ! ✦\n_LB Prestige Appart_`;
+
+  let waUrl;
+  if (phone) {
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    waUrl = `https://wa.me/${cleanPhone.startsWith('+') ? cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(msg)}`;
+  } else {
+    waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+  window.open(waUrl, '_blank');
+}
+
+// ========== SIGNATURES ==========
+async function loadSignatures() {
+  const container = document.getElementById('signaturesContainer');
+  container.innerHTML = '<div class="loading-text">Chargement…</div>';
+  try {
+    const rec = await fetchRecord();
+    const sigs = (rec.signatures || []).slice().reverse();
+
+    if (!sigs.length) {
+      container.innerHTML = '<div class="sign-empty">Aucune signature pour le moment.<br>Les approbations du règlement apparaîtront ici.</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="font-size:0.8rem;color:var(--white-dim);margin-bottom:12px;">
+        <strong style="color:var(--gold);">${sigs.length}</strong> signature(s) enregistrée(s)
+      </div>
+      ${sigs.map(s => `
+        <div style="background:var(--black-3);border:1px solid rgba(201,168,76,0.12);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:0.9rem;color:var(--white);margin-bottom:4px;">👤 ${s.clientName || '—'}</div>
+              <div style="font-size:0.75rem;color:var(--white-dim);margin-bottom:3px;">📱 ${s.clientPhone || 'Non renseigné'}</div>
+              <div style="font-size:0.7rem;color:var(--gold);font-family:monospace;">🔑 ${s.clientCode || '—'}</div>
+              <div style="font-size:0.68rem;color:rgba(200,191,168,0.5);margin-top:4px;">🕐 ${s.signedAt || '—'}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+              <span style="background:rgba(128,200,128,0.12);border:1px solid rgba(128,200,128,0.3);border-radius:8px;padding:4px 10px;font-size:0.68rem;color:#80c880;text-align:center;">✅ Signé</span>
+              ${s.clientPhone ? `<button class="btn-sm" style="font-size:0.65rem;" onclick="waFromSig('${s.clientPhone}','${s.clientName}','${s.clientCode}')">📲 WA</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  } catch(e) {
+    container.innerHTML = '<div class="sign-empty">Erreur de chargement.</div>';
+  }
+}
+
+function waFromSig(phone, name, code) {
+  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+  const url = `${CLIENT_URL}?key=${encodeURIComponent(code)}`;
+  const msg = `✅ Bonjour *${name}* !\n\nNous confirmons la bonne réception de votre signature du règlement intérieur du *LB Prestige Cosy Appart*.\n\nVotre espace client : 🔗 ${url}\n\nMerci et bon séjour ! ✦\n_LB Prestige Appart_`;
+  const waUrl = `https://wa.me/${cleanPhone.startsWith('+') ? cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, '_blank');
+}
+
+function exportSignatures() {
+  fetchRecord().then(rec => {
+    const sigs = rec.signatures || [];
+    if (!sigs.length) { showToast('Aucune signature à exporter'); return; }
+    const header = 'Nom,Téléphone,Code client,Date signature\n';
+    const rows = sigs.map(s => `"${s.clientName||''}","${s.clientPhone||''}","${s.clientCode||''}","${s.signedAt||''}"`).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'signatures_reglement.csv';
+    a.click(); URL.revokeObjectURL(url);
+    showToast('✓ CSV exporté');
+  }).catch(() => showToast('Erreur export'));
+}
+
+// ========== MESSAGES ==========
+function selectClientForMsg(code) {
+  if (!code) return;
+  const sel = document.getElementById('msgClientSelect');
+  const opt = sel.querySelector(`option[value="${CSS.escape(code)}"]`) || [...sel.options].find(o => o.value === code);
+  if (!opt) return;
+  const phone = opt.dataset.phone || '';
+  const name = opt.dataset.name || 'Client';
+  document.getElementById('msgClientCode').value = code;
+  document.getElementById('msgPhone').value = phone;
+  // Mettre à jour le texte du template actif
+  const activeTemplate = document.querySelector('.msg-tpl.active');
+  if (activeTemplate) {
+    const tplName = activeTemplate.textContent.trim().toLowerCase()
+      .replace('bienvenue','bienvenue').replace('remerciement','merci')
+      .replace('demander avis','avis').replace('promotion','promo').replace('confirmation','confirm');
+    const key = Object.keys(templates).find(k => templates[k] && activeTemplate.getAttribute('onclick')?.includes(k)) || 'bienvenue';
+    document.getElementById('msgText').value = templates[key](code);
+  }
+}
+
+function quickSendWA(templateName) {
+  const sel = document.getElementById('msgClientSelect');
+  const code = sel.value;
+  if (!code) { showToast('⚠ Sélectionnez d\'abord un client'); return; }
+  const opt = [...sel.options].find(o => o.value === code);
+  const phone = opt?.dataset.phone || '';
+  const name = opt?.dataset.name || 'Client';
+  const msg = templates[templateName] ? templates[templateName](code) : '';
+  if (!msg) return;
+  let waUrl;
+  if (phone) {
+    const clean = phone.replace(/[\s\-\(\)]/g, '');
+    waUrl = `https://wa.me/${clean.startsWith('+') ? clean.slice(1) : clean}?text=${encodeURIComponent(msg)}`;
+  } else {
+    waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+  window.open(waUrl, '_blank');
+}
+
+const templates = {
+  bienvenue: (code) => `🌟 Bienvenue au *LB Prestige Cosy Appart* !\n\nNous sommes ravis de vous accueillir. Votre espace client est disponible ici :\n🔗 ${CLIENT_URL}?key=${encodeURIComponent(code)}\n\nCode d'accès : *${code}*\n\nBon séjour ! ✦`,
+  merci: (code) => `🙏 Merci pour votre séjour au *LB Prestige Cosy Appart* !\n\nVotre confiance nous touche. Si vous avez apprécié votre séjour, n'hésitez pas à laisser un avis.\n\nÀ très bientôt ! ✦`,
+  avis: (code) => `⭐ Bonjour,\n\nVotre avis compte énormément pour nous ! Partagez votre expérience en quelques minutes :\n🔗 ${CLIENT_URL}?key=${encodeURIComponent(code)}\n\nMerci d'avance ! ✦\n_LB Prestige Appart_`,
+  promo: (code) => `🎁 Offre spéciale *LB Prestige Cosy Appart* !\n\nProfitez d'une réduction exclusive sur votre prochain séjour. Contactez-nous pour en savoir plus.\n\nÀ bientôt ! ✦`,
+  confirm: (code) => `✅ Votre réservation au *LB Prestige Cosy Appart* est confirmée.\n\nVotre espace client :\n🔗 ${CLIENT_URL}?key=${encodeURIComponent(code)}\n\nCode : *${code}*\n\nÀ très bientôt ! ✦`
+};
+
+function setTemplate(name, el) {
+  document.querySelectorAll('.msg-tpl').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const code = document.getElementById('msgClientCode').value.trim() || 'CODE_CLIENT';
+  document.getElementById('msgText').value = templates[name](code);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('msgText').value = templates['bienvenue']('CODE_CLIENT');
+});
+
+function sendWhatsApp() {
+  const phone = document.getElementById('msgPhone').value.trim().replace(/[\s\-\(\)]/g, '');
+  const msg = document.getElementById('msgText').value.trim();
+  if (!msg) { showToast('⚠ Saisissez un message'); return; }
+
+  let url;
+  if (phone) {
+    url = `https://wa.me/${phone.startsWith('+') ? phone.slice(1) : phone}?text=${encodeURIComponent(msg)}`;
+  } else {
+    url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+  window.open(url, '_blank');
+}
+
+// ========== CONFIG ==========
+async function loadConfigForm() {
+  try {
+    const rec = await fetchRecord();
+    const cfg = rec.config || {};
+    const setBin = localStorage.getItem('lb_bin_id');
+    const setKey = localStorage.getItem('lb_bin_key');
+
+    if (setBin) document.getElementById('cfgBinId').value = setBin;
+    if (setKey) document.getElementById('cfgApiKey').value = setKey;
+    if (cfg.wifiName) document.getElementById('cfgWifiName').value = cfg.wifiName;
+    if (cfg.wifiPass) document.getElementById('cfgWifiPass').value = cfg.wifiPass;
+    if (cfg.netflixEmail) document.getElementById('cfgNetflixEmail').value = cfg.netflixEmail;
+    if (cfg.netflixPass) document.getElementById('cfgNetflixPass').value = cfg.netflixPass;
+    if (cfg.netflixInstructions) document.getElementById('cfgNetflixInstructions').value = cfg.netflixInstructions;
+    if (cfg.parkingPlace) document.getElementById('cfgParkingPlace').value = cfg.parkingPlace;
+    if (cfg.parkingInstructions) document.getElementById('cfgParkingInstructions').value = cfg.parkingInstructions;
+    if (cfg.reglementText) document.getElementById('cfgReglement').value = cfg.reglementText;
+    if (cfg.studioPrice) document.getElementById('cfgStudioPrice').value = cfg.studioPrice;
+    if (cfg.appartPrice) document.getElementById('cfgAppartPrice').value = cfg.appartPrice;
+    if (rec.meta?.nom) document.getElementById('cfgNom').value = rec.meta.nom;
+    if (rec.meta?.adresse) document.getElementById('cfgAdresse').value = rec.meta.adresse;
+  } catch(e) {}
+}
+
+async function saveAllConfig() {
+  try {
+    const rec = await fetchRecord();
+    if (!rec.config) rec.config = {};
+    if (!rec.meta) rec.meta = {};
+
+    rec.config.wifiName = document.getElementById('cfgWifiName').value.trim();
+    rec.config.wifiPass = document.getElementById('cfgWifiPass').value.trim();
+    rec.config.netflixEmail = document.getElementById('cfgNetflixEmail').value.trim();
+    rec.config.netflixPass = document.getElementById('cfgNetflixPass').value.trim();
+    rec.config.netflixInstructions = document.getElementById('cfgNetflixInstructions').value.trim();
+    rec.config.parkingPlace = document.getElementById('cfgParkingPlace').value.trim();
+    rec.config.parkingInstructions = document.getElementById('cfgParkingInstructions').value.trim();
+    rec.config.reglementText = document.getElementById('cfgReglement').value.trim();
+    rec.config.studioPrice = document.getElementById('cfgStudioPrice').value.trim();
+    rec.config.appartPrice = document.getElementById('cfgAppartPrice').value.trim();
+    rec.meta.nom = document.getElementById('cfgNom').value.trim();
+    rec.meta.adresse = document.getElementById('cfgAdresse').value.trim();
+
+    await saveRecord(rec);
+    showToast('✓ Configuration sauvegardée');
+  } catch(e) {
+    showToast('Erreur de sauvegarde');
+  }
+}
+
+function saveJsonBin() {
+  const id = document.getElementById('cfgBinId').value.trim();
+  const key = document.getElementById('cfgApiKey').value.trim();
+  if (id) { JSONBIN_ID = id; localStorage.setItem('lb_bin_id', id); }
+  if (key) { JSONBIN_KEY = key; localStorage.setItem('lb_bin_key', key); }
+  showToast('✓ JSONBin sauvegardé');
+}
+
+async function testConnection() {
+  try {
+    const rec = await fetchRecord();
+    showToast('✓ Connexion réussie !');
+  } catch(e) {
+    showToast('✗ Connexion échouée');
+  }
+}
+
+function copyClientLink() {
+  navigator.clipboard.writeText(CLIENT_URL)
+    .then(() => showToast('✓ Lien client copié'))
+    .catch(() => showToast('Copiez : ' + CLIENT_URL));
+}
+
+function updateCredentials() {
+  const user = document.getElementById('cfgNewUser').value.trim();
+  const pass = document.getElementById('cfgNewPass').value;
+  if (user) { ADMIN_USER = user; localStorage.setItem('lb_admin_user', user); }
+  if (pass) { ADMIN_PASS = pass; localStorage.setItem('lb_admin_pass', pass); }
+  document.getElementById('cfgNewUser').value = '';
+  document.getElementById('cfgNewPass').value = '';
+  showToast('✓ Identifiants mis à jour et sauvegardés');
+}
+
+// ========== TOAST ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
