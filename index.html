@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>LB Prestige Cosy Appart - Bienvenue</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #B89548;
+            --gold-light: #D4AF37;
+            --cream: #FDFCF9;
+            --white: #FFFFFF;
+            --dark: #1A1A1A;
+            --text-dim: #666666;
+            --shadow: 0 10px 30px rgba(184, 149, 72, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--cream);
+            color: var(--dark);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* LOGIN SCREEN */
+        #loginScreen {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            background: linear-gradient(rgba(253, 252, 249, 0.9), rgba(253, 252, 249, 0.9)), 
+                        url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000');
+            background-size: cover;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 40px 30px;
+            width: 100%; max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--gold);
+        }
+
+        .login-card h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; letter-spacing: 3px; margin-bottom: 5px; }
+        .login-card p { font-size: 0.75rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 30px; }
+
+        input {
+            width: 100%; padding: 15px; border: 1px solid #EEE; background: #FAFAFA;
+            font-family: 'Montserrat', sans-serif; text-align: center; outline: none; margin-bottom: 20px;
+        }
+
+        .btn-gold {
+            width: 100%; padding: 16px; background: var(--gold); color: white; border: none;
+            text-transform: uppercase; letter-spacing: 2px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-gold:hover { background: var(--dark); }
+
+        /* MAIN APP */
+        #appScreen { display: none; }
+        .header { background: var(--white); padding: 40px 20px; text-align: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .header h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--gold); }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 30px 20px; }
+
+        .section-card { background: var(--white); padding: 30px; margin-bottom: 25px; box-shadow: var(--shadow); border-radius: 4px; }
+        .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 20px; text-align: center; border-bottom: 1px solid #F9F9F9; padding-bottom: 10px; }
+
+        .concierge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .concierge-item { padding: 25px; border: 1px solid #F5F5F5; text-align: center; cursor: pointer; transition: 0.3s; }
+        .concierge-item:hover { border-color: var(--gold); background: #FFFCF7; }
+        .concierge-item span { display: block; font-size: 1.8rem; margin-bottom: 10px; }
+        .concierge-item label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* STAR RATING */
+        .stars { display: flex; justify-content: center; gap: 12px; margin: 25px 0; }
+        .star { font-size: 2.2rem; color: #EEE; cursor: pointer; transition: 0.2s; }
+        .star.active { color: var(--gold); }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .tag { padding: 8px 18px; border: 1px solid #EEE; border-radius: 25px; font-size: 0.8rem; cursor: pointer; transition: 0.3s; }
+        .tag.active { background: var(--gold); color: white; border-color: var(--gold); }
+
+        textarea { width: 100%; height: 100px; padding: 15px; border: 1px solid #EEE; font-family: inherit; resize: none; margin-top: 10px; outline: none; }
+
+        /* MODAL */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: var(--white); padding: 40px; width: 100%; max-width: 500px; border-radius: 2px; position: relative; text-align: center; }
+        .close-btn { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 1.2rem; color: #AAA; }
+
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 15px 30px; border-radius: 50px; font-size: 0.9rem; display: none; animation: slideUp 0.4s; z-index: 2000; }
+        @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div id="loginScreen">
+    <div class="login-card">
+        <h1>LB PRESTIGE</h1>
+        <p>Luxe & Sérénité</p>
+        <input type="text" id="accessCode" placeholder="Votre code d'accès">
+        <button class="btn-gold" onclick="attemptLogin()">Se connecter</button>
+    </div>
+</div>
+
+<div id="appScreen">
+    <div class="header">
+        <p style="font-size: 0.7rem; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 5px;">BIENVENUE AU</p>
+        <h2>LB PRESTIGE COSY APPART</h2>
+    </div>
+
+    <div class="container">
+        <!-- SERVICES -->
+        <div class="section-card">
+            <div class="section-title">Guide d'Accueil</div>
+            <div class="concierge-grid">
+                <div class="concierge-item" onclick="showModal('WIFI')"><span>📶</span><label>Wi-Fi</label></div>
+                <div class="concierge-item" onclick="showModal('NETFLIX')"><span>🎬</span><label>Netflix</label></div>
+                <div class="concierge-item" onclick="showModal('PARKING')"><span>🚗</span><label>Parking</label></div>
+                <div class="concierge-item" onclick="showModal('CUISINE')"><span>🍳</span><label>Cuisine</label></div>
+            </div>
+        </div>
+
+        <!-- TARIFS -->
+        <div class="section-card">
+            <div class="section-title">Nos Tarifs</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #F9F9F9; padding-bottom: 8px;">
+                <span>Studio de Luxe</span>
+                <span style="font-weight: 600; color: var(--gold);">25 000 FCFA</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-bottom: 8px;">
+                <span>Appartement Cosy</span>
+                <span style="font-weight: 600; color: var(--gold);">35 000 FCFA</span>
+            </div>
+        </div>
+
+        <!-- EVALUATION EN BAS -->
+        <div class="section-card">
+            <div class="section-title">Votre Avis</div>
+            <p style="text-align: center; font-size: 0.85rem; color: var(--text-dim);">Comment s'est déroulé votre séjour ?</p>
+            
+            <div class="stars">
+                <span class="star" onclick="rate(1)">★</span>
+                <span class="star" onclick="rate(2)">★</span>
+                <span class="star" onclick="rate(3)">★</span>
+                <span class="star" onclick="rate(4)">★</span>
+                <span class="star" onclick="rate(5)">★</span>
+            </div>
+
+            <div class="tags">
+                <div class="tag" onclick="this.classList.toggle('active')">Propreté</div>
+                <div class="tag" onclick="this.classList.toggle('active')">Accueil</div>
+                <div class="tag" onclick="this.classList.toggle('active')">Calme</div>
+                <div class="tag" onclick="this.classList.toggle('active')">Confort</div>
+            </div>
+
+            <textarea id="userComment" placeholder="Un petit mot sur votre expérience..."></textarea>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <p style="font-size: 0.85rem; margin-bottom: 15px; font-weight: 600;">Recommanderiez-vous LB PRESTIGE APPART ?</p>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button class="tag" id="recoOui" onclick="setReco('oui')">Oui</button>
+                    <button class="tag" id="recoNon" onclick="setReco('non')">Non</button>
+                </div>
+            </div>
+
+            <button class="btn-gold" style="margin-top: 35px;" onclick="sendReview()">Soumettre mon avis</button>
+        </div>
+    </div>
+</div>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">✕</span>
+        <h3 id="mTitle" style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 15px;"></h3>
+        <p id="mDesc" style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.8;"></p>
+    </div>
+</div>
+
+<div id="toast">Avis envoyé avec succès</div>
+
+<script>
+    const CONFIG = {
+        binId: '6785b5dcacd3cb34a8b3edd9',
+        apiKey: '$2a$10$43LNnZeebsdi37UiTugFuceUndIIT9oqJLU7qUM0ZN5dOrfA8kR2gC'
+    };
+
+    let clientData = { name: "", rating: 0, reco: "" };
+
+    // --- VOIX D'ACCUEIL ---
+    function speakWelcome(name) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(`Bienvenue chez L B Prestige, ${name}. Nous vous souhaitons un séjour d'exception parmi nous.`);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+
+            const voices = window.speechSynthesis.getVoices();
+            // Sélection d'une voix douce si disponible
+            const femaleVoice = voices.find(v => v.name.includes('Julie') || v.name.includes('Hortense') || v.name.includes('Google français'));
+            if (femaleVoice) utterance.voice = femaleVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // --- LOGIN ---
+    async function attemptLogin() {
+        const code = document.getElementById('accessCode').value.toUpperCase();
+        if(!code) return;
+        
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.binId}/latest`, {
+                headers: { 'X-Master-Key': CONFIG.apiKey }
+            });
+            const data = await res.json();
+            const validCodes = data.record.codes || {};
+
+            if (validCodes[code]) {
+                clientData.name = validCodes[code].name;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'block';
+                
+                // Déclenchement de la voix
+                setTimeout(() => speakWelcome(clientData.name), 600);
+            } else {
+                alert("Code d'accès incorrect.");
+            }
+        } catch (e) { alert("Erreur réseau"); }
+    }
+
+    // --- EVALUATION ---
+    function rate(n) {
+        clientData.rating = n;
+        document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < n));
+    }
+
+    function setReco(val) {
+        clientData.reco = val;
+        document.getElementById('recoOui').classList.toggle('active', val === 'oui');
+        document.getElementById('recoNon').classList.toggle('active', val === 'non');
+    }
+
+    async function sendReview() {
+        if (clientData.rating === 0) return alert("Veuillez noter votre séjour.");
+        
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.binId}/latest`, { headers: { 'X-Master-Key': CONFIG.apiKey } });
+            const data = await res.json();
+            const record = data.record;
+            
+            const newReview = {
+                clientName: clientData.name,
+                rating: clientData.rating,
+                comment: document.getElementById('userComment').value,
+                reco: clientData.reco,
+                tags: Array.from(document.querySelectorAll('.tag.active')).map(t => t.innerText),
+                date: new Date().toLocaleDateString('fr-FR')
+            };
+
+            if (!record.reviews) record.reviews = [];
+            record.reviews.unshift(newReview);
+
+            await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.binId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': CONFIG.apiKey },
+                body: JSON.stringify(record)
+            });
+
+            const t = document.getElementById('toast');
+            t.style.display = 'block';
+            setTimeout(() => location.reload(), 2000);
+        } catch (e) { alert("Erreur de transmission."); }
+    }
+
+    // --- MODAL ---
+    function showModal(type) {
+        const modalData = {
+            WIFI: { t: "Wi-Fi Prestige", b: "Réseau : <b>LB_PRESTIGE</b><br>Mot de passe : <b>LBPrestige2024</b><br>Accès haut débit illimité." },
+            NETFLIX: { t: "Netflix & TV", b: "Allumez la TV et sélectionnez le profil 'LB Prestige'.<br>Compte : lbprestige@gmail.com<br>Mdp : LBNetflix2024" },
+            PARKING: { t: "Parking Privé", b: "Votre place réservée est la numéro <b>07</b>.<br>Le parking est sécurisé et surveillé 24h/24." },
+            CUISINE: { t: "Espace Cuisine", b: "Équipements à disposition : Plaques à induction, Machine à café (capsules offertes), Micro-ondes." }
+        };
+        document.getElementById('mTitle').innerText = modalData[type].t;
+        document.getElementById('mDesc').innerHTML = modalData[type].b;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
+    
+    // Préchauffage voix
+    window.speechSynthesis.getVoices();
+</script>
+</body>
+</html>
