@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LB Prestige Appart — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #A08030;
+    --gold-light: #B8923E;
+    --gold-bright: #C9A85A;
+    --gold-dark: #7A5C1A;
+    --gold-pale: #EDE5CE;
+    --bg: #EEEAE3;
+    --bg2: #E6E1D8;
+    --bg3: #DDD8CE;
+    --bg4: #D3CEC4;
+    --sidebar: #252018;
+    --sidebar2: #312A1F;
+    --sidebar3: #3E3525;
+    --sidebar-border: rgba(160,128,48,0.22);
+    --text: #2A2420;
+    --text2: #5A5248;
+    --text3: #8A8278;
+    --text4: #AAAA9A;
+    --white: #F4F1EC;
+    --red: #A83838;
+    --green: #388A50;
+    --teal: #2A7A74;
+    --blue: #2A5490;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(60,40,10,0.07);
+    --shadow-lg: 0 12px 48px rgba(60,40,10,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ===== LOGIN ===== */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    background: linear-gradient(145deg, #E4E0D8 0%, #DAD5CC 40%, #D2CCC0 100%);
+    position: relative; overflow: hidden;
+  }
+
+  #loginScreen::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(160,128,48,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(160,128,48,0.04) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .login-logo { text-align: center; margin-bottom: 32px; position: relative; z-index: 1; }
+
+  .login-logo .lb-big {
+    width: 80px; height: 80px;
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-light), var(--gold-bright));
+    border-radius: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 600; color: #FFF8E8;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 32px rgba(160,128,48,0.28), 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  .login-logo h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 400; color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .login-logo h1 em { font-style: italic; color: var(--gold); }
+  .login-logo p { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-top: 6px; }
+
+  .login-card {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(184,148,60,0.2);
+    border-radius: 22px; padding: 36px 32px;
+    width: 100%; max-width: 440px;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.8) inset;
+    backdrop-filter: blur(20px);
+    position: relative; z-index: 1;
+  }
+
+  .login-card::before {
+    content: ''; position: absolute; top: 0; left: 12%; right: 12%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold-bright), var(--gold-light), transparent);
+    border-radius: 2px;
+  }
+
+  .login-card h2 {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.4rem;
+    color: var(--gold); margin-bottom: 24px; text-align: center; font-weight: 400;
+  }
+
+  .field-group { margin-bottom: 16px; }
+  .field-group label {
+    display: block; font-size: 0.65rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 7px; font-weight: 600;
+  }
+  .field-group input, .field-group select, .field-group textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid rgba(184,148,60,0.25);
+    border-radius: 10px; padding: 13px 16px;
+    color: var(--text); font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem; outline: none; transition: all 0.25s;
+  }
+  .field-group input:focus, .field-group textarea:focus {
+    border-color: var(--gold-light);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(184,148,60,0.1);
+  }
+  .field-group input::placeholder { color: var(--text4); }
+  .field-group textarea { resize: vertical; min-height: 85px; line-height: 1.6; }
+
+  .remember-row {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 18px; font-size: 0.76rem; color: var(--text2); cursor: pointer;
+  }
+  .remember-row input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; }
+
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-light), var(--gold-bright));
+    color: #FFF8E8; border: none; border-radius: 11px; padding: 15px;
+    font-family: 'Montserrat', sans-serif; font-size: 0.82rem;
+    font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(160,128,48,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(160,128,48,0.3); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  #loginError {
+    color: var(--red); font-size: 0.76rem; text-align: center; margin-top: 12px; display: none;
+    background: rgba(201,64,64,0.06); border-radius: 8px; padding: 9px; border: 1px solid rgba(201,64,64,0.18);
+  }
+
+  /* ===== APP LAYOUT ===== */
+  #appScreen { display: none; flex-direction: column; min-height: 100vh; }
+
+  .app-header {
+    height: 60px; background: var(--white);
+    border-bottom: 1px solid rgba(184,148,60,0.18);
+    padding: 0 20px; display: flex; align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+    box-shadow: 0 2px 20px rgba(60,40,10,0.08);
+  }
+
+  .app-header .logo { display: flex; align-items: center; gap: 11px; }
+
+  .app-header .logo .lb-sq {
+    width: 38px; height: 38px;
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-light), var(--gold-bright));
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+    font-weight: 600; color: #FFF8E8;
+    box-shadow: 0 3px 12px rgba(160,128,48,0.22);
+  }
+
+  .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--text); line-height: 1.2; }
+  .logo-text span { display: block; font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text4); font-family: 'Montserrat', sans-serif; font-weight: 300; }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .sync-badge {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(58,154,88,0.08); border: 1px solid rgba(58,154,88,0.22);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 0.62rem; color: var(--green); letter-spacing: 0.08em; font-weight: 600;
+  }
+  .sync-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; box-shadow: 0 0 6px var(--green); }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  .btn-logout {
+    background: transparent; border: 1px solid rgba(60,40,10,0.15);
+    border-radius: 8px; padding: 7px 14px; color: var(--text3);
+    font-family: 'Montserrat', sans-serif; font-size: 0.66rem;
+    letter-spacing: 0.12em; cursor: pointer; text-transform: uppercase; transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== APP BODY ===== */
+  .app-body { display: flex; flex: 1; min-height: calc(100vh - 60px); }
+
+  /* ===== LEFT SIDEBAR ===== */
+  .left-nav {
+    width: 88px; min-width: 88px;
+    background: var(--sidebar);
+    border-right: 1px solid rgba(184,148,60,0.2);
+    display: flex; flex-direction: column;
+    align-items: center; padding: 16px 0 28px;
+    position: sticky; top: 60px;
+    height: calc(100vh - 60px); overflow-y: auto; gap: 3px;
+    box-shadow: 3px 0 30px rgba(0,0,0,0.25);
+  }
+  .left-nav::-webkit-scrollbar { display: none; }
+
+  .nav-item {
+    width: 70px; height: 70px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 5px; cursor: pointer; border-radius: 16px;
+    transition: all 0.25s; position: relative;
+    border: 1px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-item .nav-icon { font-size: 1.6rem; transition: all 0.25s; opacity: 0.38; }
+  .nav-item .nav-label {
+    font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(255,255,255,0.28); transition: all 0.25s;
+    text-align: center; line-height: 1.2; font-weight: 500;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); }
+  .nav-item:hover .nav-icon { opacity: 0.7; }
+  .nav-item:hover .nav-label { color: rgba(255,255,255,0.65); }
+
+  .nav-item.active {
+    background: linear-gradient(145deg, rgba(184,148,60,0.22), rgba(184,148,60,0.12));
+    border-color: rgba(184,148,60,0.45);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .nav-item.active .nav-icon { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,168,75,0.7)); }
+  .nav-item.active .nav-label { color: var(--gold-bright); font-weight: 600; text-shadow: 0 0 10px rgba(212,168,75,0.6); }
+  .nav-item.active::before {
+    content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold-light));
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 10px rgba(212,168,75,0.8);
+  }
+
+  .nav-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: #E53535; color: white; font-size: 0.48rem;
+    width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; box-shadow: 0 2px 8px rgba(229,53,53,0.6);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .nav-divider { width: 40px; height: 1px; background: rgba(255,255,255,0.08); margin: 6px 0; flex-shrink: 0; }
+
+  .panels-area { flex: 1; overflow-y: auto; background: var(--bg); }
+
+  /* ===== PANELS ===== */
+  .panel { display: none; padding: 0 24px 48px; max-width: 740px; margin: 0 auto; }
+  .panel.active { display: block; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .panel-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 400;
+    color: var(--text); padding: 28px 0 5px; letter-spacing: 0.02em;
+  }
+  .panel-sub { font-size: 0.68rem; color: var(--text4); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 24px; }
+
+  /* ===== STATS ===== */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 26px; }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid rgba(184,148,60,0.15);
+    border-radius: var(--radius); padding: 24px 18px; text-align: center;
+    position: relative; overflow: hidden; transition: all 0.25s;
+    box-shadow: var(--shadow);
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: rgba(184,148,60,0.3); }
+  .stat-card .sv {
+    font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; color: var(--gold); line-height: 1; font-weight: 400;
+  }
+  .stat-card .sl { font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text3); margin-top: 7px; font-weight: 600; }
+  .stat-card .ss { font-size: 0.68rem; color: var(--text4); margin-top: 3px; }
+
+  /* ===== SECTION LABEL ===== */
+  .sec-label {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 12px; font-weight: 600;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(184,148,60,0.2); }
+
+  /* ===== FILTER TABS ===== */
+  .filter-tabs {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 20px;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .ftab {
+    background: var(--white); border: 1px solid rgba(60,40,10,0.12);
+    border-radius: 24px; padding: 7px 18px;
+    font-size: 0.67rem; color: var(--text3);
+    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    transition: all 0.22s; font-family: 'Montserrat', sans-serif; font-weight: 400;
+    box-shadow: 0 2px 8px rgba(60,40,10,0.06);
+  }
+  .ftab.active {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+    border-color: var(--gold-light); color: #FFF8E8; font-weight: 700;
+    box-shadow: 0 4px 16px rgba(184,148,60,0.35);
+  }
+
+  /* ===== REVIEW CARDS ===== */
+  .review-card {
+    background: var(--white); border: 1px solid rgba(60,40,10,0.1);
+    border-radius: var(--radius); padding: 20px;
+    margin-bottom: 14px; position: relative; overflow: hidden; transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .review-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(184,148,60,0.4), transparent);
+  }
+  .review-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .review-card.unread { border-left: 3px solid var(--gold); }
+
+  .rv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .rv-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+  .rv-stars { color: var(--gold-light); font-size: 0.9rem; letter-spacing: 1px; }
+  .rv-meta { font-size: 0.68rem; color: var(--text4); margin-bottom: 10px; }
+  .rv-comment { font-size: 0.82rem; color: var(--text2); line-height: 1.65; margin-bottom: 12px; font-style: italic; }
+  .rv-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+  .rv-tag { font-size: 0.64rem; padding: 3px 10px; border-radius: 10px; border: 1px solid; font-weight: 500; }
+  .rv-tag.pos { border-color: rgba(58,154,88,0.3); color: var(--green); background: rgba(58,154,88,0.08); }
+  .rv-tag.neg { border-color: rgba(201,64,64,0.25); color: var(--red); background: rgba(201,64,64,0.06); }
+
+  .reply-box {
+    background: var(--gold-pale); border: 1px solid rgba(184,148,60,0.2);
+    border-radius: 8px; padding: 11px 14px; margin-bottom: 10px;
+    font-size: 0.78rem; color: var(--gold-dark); font-style: italic; line-height: 1.55;
+  }
+
+  .reply-input-row { display: flex; gap: 8px; margin-top: 10px; }
+  .reply-input-row input {
+    flex: 1; background: var(--bg); border: 1px solid rgba(184,148,60,0.22);
+    border-radius: 8px; padding: 9px 13px; color: var(--text);
+    font-family: 'Montserrat', sans-serif; font-size: 0.78rem; outline: none; transition: all 0.2s;
+  }
+  .reply-input-row input:focus { border-color: var(--gold-light); background: var(--white); }
+
+  /* ===== BUTTONS ===== */
+  .btn-sm {
+    background: var(--white); border: 1px solid rgba(184,148,60,0.3);
+    border-radius: 8px; padding: 8px 14px; color: var(--gold);
+    font-family: 'Montserrat', sans-serif; font-size: 0.7rem; cursor: pointer;
+    white-space: nowrap; transition: all 0.2s; font-weight: 600; letter-spacing: 0.06em;
+    box-shadow: 0 2px 8px rgba(60,40,10,0.08);
+  }
+  .btn-sm:hover { background: var(--gold-pale); border-color: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184,148,60,0.2); }
+  .btn-sm.danger { border-color: rgba(201,64,64,0.25); color: var(--red); }
+  .btn-sm.danger:hover { background: rgba(201,64,64,0.06); }
+
+  /* ===== CODES ===== */
+  .create-code-box {
+    background: linear-gradient(145deg, #EEF8F5, #E8F5F2);
+    border: 1px solid rgba(42,138,130,0.25); border-radius: var(--radius); padding: 24px;
+    margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .create-code-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(42,138,130,0.6), transparent);
+  }
+  .create-code-box h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--teal); margin-bottom: 18px; font-weight: 400; }
+  .code-row { display: flex; gap: 8px; align-items: center; }
+  .code-row input {
+    flex: 1; background: var(--white); border: 1px solid rgba(42,138,130,0.25);
+    border-radius: 9px; padding: 11px 13px; color: var(--text);
+    font-family: 'Montserrat', sans-serif; font-size: 0.85rem; outline: none; letter-spacing: 0.1em; transition: all 0.2s;
+  }
+  .code-row input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42,138,130,0.1); }
+
+  .code-item {
+    background: var(--white); border: 1px solid rgba(42,138,130,0.15);
+    border-radius: 12px; padding: 14px 18px;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    transition: all 0.2s; box-shadow: var(--shadow);
+  }
+  .code-item:hover { border-color: rgba(42,138,130,0.3); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+  .ci-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+  .ci-code { font-size: 0.72rem; color: var(--teal); letter-spacing: 0.14em; margin-top: 3px; font-family: monospace; font-weight: 600; }
+  .ci-phone { font-size: 0.7rem; color: var(--text4); margin-top: 2px; }
+  .code-actions { display: flex; gap: 7px; flex-shrink: 0; }
+
+  /* ===== PARAM SECTIONS ===== */
+  .param-section {
+    background: var(--white); border: 1px solid rgba(60,40,10,0.1);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+    position: relative; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .param-section::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+  .param-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--gold); margin-bottom: 18px; font-weight: 400; }
+
+  .save-btn {
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-light));
+    color: #FFF8E8; border: none; border-radius: 10px; padding: 11px 22px;
+    font-family: 'Montserrat', sans-serif; font-size: 0.76rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.22s;
+    box-shadow: 0 4px 16px rgba(184,148,60,0.35);
+  }
+  .save-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,148,60,0.5); }
+
+  .test-btn {
+    background: var(--white); border: 1px solid rgba(42,138,130,0.3); border-radius: 10px;
+    padding: 11px 22px; color: var(--teal); font-family: 'Montserrat', sans-serif;
+    font-size: 0.76rem; letter-spacing: 0.1em; cursor: pointer; text-transform: uppercase; transition: all 0.2s;
+    font-weight: 600;
+  }
+  .test-btn:hover { background: rgba(42,138,130,0.06); border-color: var(--teal); }
+
+  .copy-link-btn {
+    width: 100%; margin-top: 12px; background: var(--gold-pale);
+    border: 1px solid rgba(184,148,60,0.3); border-radius: 10px; padding: 11px;
+    color: var(--gold-dark); font-family: 'Montserrat', sans-serif; font-size: 0.74rem;
+    cursor: pointer; letter-spacing: 0.1em; transition: all 0.2s; text-transform: uppercase; font-weight: 600;
+  }
+  .copy-link-btn:hover { background: var(--bg3); border-color: var(--gold-light); }
+
+  /* ===== MESSAGES ===== */
+  .msg-templates { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+  .msg-tpl {
+    background: rgba(58,154,88,0.07); border: 1px solid rgba(58,154,88,0.2);
+    border-radius: 20px; padding: 7px 16px; font-size: 0.7rem; color: var(--green);
+    cursor: pointer; transition: all 0.2s; white-space: nowrap; font-family: 'Montserrat', sans-serif; font-weight: 500;
+  }
+  .msg-tpl.active, .msg-tpl:hover { background: rgba(58,154,88,0.14); border-color: var(--green); }
+
+  .compose-box {
+    background: var(--bg2); border: 1px solid rgba(58,154,88,0.15);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
+  }
+
+  .wa-btn {
+    width: 100%; background: linear-gradient(135deg, #075E54, #128C7E, #25D366);
+    border: none; border-radius: 12px; padding: 15px;
+    color: white; font-family: 'Montserrat', sans-serif; font-size: 0.84rem;
+    font-weight: 700; letter-spacing: 0.1em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    transition: all 0.22s; box-shadow: 0 4px 20px rgba(37,211,102,0.3);
+  }
+  .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,211,102,0.45); }
+
+  /* ===== TOGGLE ===== */
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(60,40,10,0.07); }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-info { flex: 1; }
+  .ti-title { font-size: 0.86rem; color: var(--text); font-weight: 500; }
+  .ti-desc { font-size: 0.7rem; color: var(--text4); margin-top: 2px; }
+  .toggle { width: 44px; height: 24px; background: var(--bg3); border: 1px solid rgba(60,40,10,0.15); border-radius: 12px; position: relative; cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
+  .toggle.on { background: linear-gradient(135deg, var(--gold-dark), var(--gold-light)); border-color: var(--gold-light); box-shadow: 0 2px 10px rgba(184,148,60,0.3); }
+  .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: var(--white); border-radius: 50%; top: 2px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .toggle.on::after { left: 22px; }
+
+  /* ===== SIGNATURE ===== */
+  .sig-card {
+    background: var(--white); border: 1px solid rgba(58,154,88,0.2);
+    border-radius: 12px; padding: 16px; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: var(--shadow); transition: all 0.2s;
+  }
+  .sig-card:hover { border-color: rgba(58,154,88,0.35); transform: translateY(-1px); }
+  .sig-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+  .sig-date { font-size: 0.68rem; color: var(--text4); margin-top: 3px; }
+  .sig-code { font-size: 0.72rem; color: var(--green); font-family: monospace; }
+  .sig-check { font-size: 1.4rem; }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed; bottom: 28px; right: 24px;
+    background: var(--sidebar);
+    border: 1px solid rgba(184,148,60,0.35); border-radius: 12px; padding: 13px 22px;
+    font-size: 0.82rem; color: var(--gold-bright); z-index: 9999;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ===== MISC ===== */
+  .loading-text { color: var(--text4); font-size: 0.82rem; text-align: center; padding: 30px; font-style: italic; letter-spacing: 0.08em; }
+  .sign-empty { text-align: center; color: var(--text4); font-size: 0.82rem; padding: 28px; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: rgba(184,148,60,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(184,148,60,0.5); }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-logo">
+    <div class="lb-big">LB</div>
+    <h1>Prestige Appart</h1>
+    <p>Kotto · Carrefour des Roses · Douala</p>
+  </div>
+  <div class="login-card">
+    <h2>Espace Propriétaire</h2>
+    <div class="field-group">
+      <label>Identifiant</label>
+      <input type="text" id="loginUser" placeholder="Identifiant admin" autocomplete="username">
+    </div>
+    <div class="field-group">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPass" placeholder="Mot de passe" autocomplete="current-password">
+    </div>
+    <label class="remember-row">
+      <input type="checkbox" id="rememberMe"> Se souvenir de moi (7 jours)
+    </label>
+    <button class="btn-primary" onclick="doAdminLogin()">Accéder à mon espace — ✦</button>
+    <div id="loginError">Identifiants incorrects. Veuillez réessayer.</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="appScreen">
+  <div class="app-header">
+    <div class="logo">
+      <div class="lb-sq">LB</div>
+      <div class="logo-text">
+        LB Prestige Cosy Appart
+        <span>Espace Administration — Lionel Batiston</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="sync-badge" id="syncBadge">
+        <div class="dot"></div>
+        Connecté
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+
+    <!-- ===== LEFT SIDEBAR ===== -->
+    <nav class="left-nav">
+      <div class="nav-item active" onclick="switchPanel('Dashboard',this)">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Accueil</span>
+      </div>
+      <div class="nav-item" onclick="switchPanel('Reviews',this)">
+        <span class="nav-icon">⭐</span>
+        <span class="nav-label">Avis</span>
+        <span class="nav-badge" id="navBadge" style="display:none;">0</span>
+      </div>
+      <div class="nav-item" onclick="switchPanel('Codes',this)">
+        <span class="nav-icon">🔑</span>
+        <span class="nav-label">Codes</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" onclick="switchPanel('Reglement',this)">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Règlement</span>
+        <span class="nav-badge" id="reglementBadge" style="display:none;">0</span>
+      </div>
+      <div class="nav-item" onclick="switchPanel('Messages',this)">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">Messages</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" onclick="switchPanel('Config',this)">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Config</span>
+      </div>
+    </nav>
+
+    <!-- ===== PANELS AREA ===== -->
+    <div class="panels-area">
+
+  <!-- PANELS -->
+  <div id="panelDashboard" class="panel active">
+    <div class="panel-title">Tableau de bord</div>
+    <div class="panel-sub">Vue d'ensemble de votre activité</div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="sv" id="statTotal">—</div>
+        <div class="sl">Avis total</div>
+        <div class="ss">Depuis le début</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="statAvg">—</div>
+        <div class="sl">Note moyenne</div>
+        <div class="ss">Sur 5 étoiles</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="statUnread">—</div>
+        <div class="sl">Non lus</div>
+        <div class="ss">À traiter</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="statNoReply">—</div>
+        <div class="sl">Sans réponse</div>
+        <div class="ss">En attente</div>
+      </div>
+    </div>
+
+    <div style="font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Derniers avis</div>
+    <div id="recentReviews"><div class="loading-text">Chargement…</div></div>
+  </div>
+
+  <div id="panelReviews" class="panel">
+    <div class="panel-title">Avis clients</div>
+    <div class="panel-sub">Consultez et répondez à chaque avis reçu</div>
+
+    <div class="filter-tabs">
+      <span class="ftab active" onclick="filterReviews('all',this)">TOUS (<span id="cntAll">0</span>)</span>
+      <span class="ftab" onclick="filterReviews('unread',this)">NON LUS (<span id="cntUnread">0</span>)</span>
+      <span class="ftab" onclick="filterReviews('noreply',this)">SANS RÉPONSE (<span id="cntNoReply">0</span>)</span>
+      <span class="ftab" onclick="filterReviews('5',this)">★★★★★</span>
+      <span class="ftab" onclick="filterReviews('studio',this)">STUDIO</span>
+      <span class="ftab" onclick="filterReviews('appart',this)">APPARTEMENT</span>
+    </div>
+
+    <div id="reviewsList"><div class="loading-text">Chargement des avis…</div></div>
+  </div>
+
+  <div id="panelCodes" class="panel">
+    <div class="panel-title">Codes clients</div>
+    <div class="panel-sub">Gérez les accès de vos clients</div>
+
+    <div class="create-code-box">
+      <h3>✦ Créer un nouveau code</h3>
+      <div class="field-group">
+        <label>Nom du client</label>
+        <input type="text" id="newCodeName" placeholder="Ex: Marie Dupont">
+      </div>
+      <div class="field-group">
+        <label>Téléphone (WhatsApp)</label>
+        <input type="tel" id="newCodePhone" placeholder="Ex: +237 6XX XXX XXX">
+      </div>
+      <div class="code-row">
+        <input type="text" id="newCodeValue" placeholder="Code (auto-généré ou manuel)">
+        <button class="btn-sm" onclick="generateCode()">⟳ Générer</button>
+        <button class="btn-primary" style="width:auto;padding:10px 18px;font-size:0.74rem;" onclick="createCode()">+ Créer</button>
+      </div>
+    </div>
+
+    <div style="font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Codes actifs</div>
+    <div id="codesList"><div class="loading-text">Chargement…</div></div>
+  </div>
+
+  <!-- RÈGLEMENT -->
+  <div id="panelReglement" class="panel">
+    <div class="panel-title">Suivi Règlement</div>
+    <div class="panel-sub">Confirmations règlement intérieur</div>
+
+    <div style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:14px;margin-bottom:18px;font-size:0.8rem;color:var(--white-dim);line-height:1.6;">
+      📋 Ce tableau liste tous les clients ayant approuvé le règlement intérieur. Les nouvelles signatures apparaissent <strong style="color:var(--gold);">en temps réel</strong>.
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="save-btn" style="flex:1;" onclick="loadSignatures()">🔄 Actualiser</button>
+      <button class="btn-sm" onclick="exportSignatures()">📥 Exporter CSV</button>
+    </div>
+
+    <div id="signaturesContainer">
+      <div class="loading-text">Chargement des signatures…</div>
+    </div>
+  </div>
+
+  <div id="panelMessages" class="panel">
+    <div class="panel-title">Messages WhatsApp</div>
+    <div class="panel-sub">Envoyez des messages à vos clients</div>
+
+    <!-- Sélecteur client rapide -->
+    <div class="param-section" style="margin-bottom:16px;">
+      <h3>👤 Sélectionner un client</h3>
+      <div class="field-group" style="margin-bottom:10px;">
+        <label>Client (depuis vos codes actifs)</label>
+        <select id="msgClientSelect" onchange="selectClientForMsg(this.value)" style="width:100%;background:var(--black-4);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px 14px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.85rem;outline:none;">
+          <option value="">— Choisir un client —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-sm" onclick="quickSendWA('bienvenue')">📲 Bienvenue</button>
+        <button class="btn-sm" onclick="quickSendWA('confirm')">✅ Confirmation</button>
+        <button class="btn-sm" onclick="quickSendWA('avis')">⭐ Demander avis</button>
+        <button class="btn-sm" onclick="quickSendWA('merci')">🙏 Remerciement</button>
+        <button class="btn-sm" onclick="quickSendWA('promo')">🎁 Promo</button>
+      </div>
+    </div>
+
+    <!-- Composer message manuel -->
+    <div style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">✦ Ou composer manuellement</div>
+
+    <div class="msg-templates">
+      <span class="msg-tpl active" onclick="setTemplate('bienvenue',this)">Bienvenue</span>
+      <span class="msg-tpl" onclick="setTemplate('merci',this)">Remerciement</span>
+      <span class="msg-tpl" onclick="setTemplate('avis',this)">Demander avis</span>
+      <span class="msg-tpl" onclick="setTemplate('promo',this)">Promotion</span>
+      <span class="msg-tpl" onclick="setTemplate('confirm',this)">Confirmation</span>
+    </div>
+
+    <div class="compose-box">
+      <div class="field-group">
+        <label>Code client (optionnel)</label>
+        <input type="text" id="msgClientCode" placeholder="Laissez vide pour message général">
+      </div>
+      <div class="field-group">
+        <label>Numéro WhatsApp du client</label>
+        <input type="tel" id="msgPhone" placeholder="+237 6XX XXX XXX">
+      </div>
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Message</label>
+        <textarea id="msgText" placeholder="Votre message…"></textarea>
+      </div>
+    </div>
+
+    <button class="wa-btn" onclick="sendWhatsApp()">
+      <span>📲</span> Envoyer via WhatsApp
+    </button>
+  </div>
+
+  <div id="panelConfig" class="panel">
+    <div class="panel-title">Configuration</div>
+    <div class="panel-sub">Paramètres & contenu de l'application</div>
+
+    <!-- JSONBin -->
+    <div class="param-section">
+      <h3>☁️ JSONBin — Stockage</h3>
+      <div class="field-group">
+        <label>Bin ID</label>
+        <input type="text" id="cfgBinId" placeholder="ID de votre bin">
+      </div>
+      <div class="field-group">
+        <label>Clé API (X-Master-Key)</label>
+        <input type="password" id="cfgApiKey" placeholder="$2a$10$…">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button class="save-btn" onclick="saveJsonBin()">💾 Sauvegarder</button>
+        <button class="test-btn" onclick="testConnection()">Tester</button>
+      </div>
+      <button class="copy-link-btn" onclick="copyClientLink()">🔗 Copier lien client</button>
+    </div>
+
+    <!-- Contenu Wi-Fi -->
+    <div class="param-section">
+      <h3>📶 Wi-Fi</h3>
+      <div class="field-group">
+        <label>Nom du réseau (SSID)</label>
+        <input type="text" id="cfgWifiName" placeholder="Nom du réseau Wi-Fi">
+      </div>
+      <div class="field-group">
+        <label>Mot de passe Wi-Fi</label>
+        <input type="text" id="cfgWifiPass" placeholder="Mot de passe">
+      </div>
+    </div>
+
+    <!-- Netflix -->
+    <div class="param-section">
+      <h3>📺 Netflix</h3>
+      <div class="field-group">
+        <label>Email Netflix</label>
+        <input type="email" id="cfgNetflixEmail" placeholder="email@exemple.com">
+      </div>
+      <div class="field-group">
+        <label>Mot de passe Netflix</label>
+        <input type="text" id="cfgNetflixPass" placeholder="Mot de passe Netflix">
+      </div>
+      <div class="field-group">
+        <label>Instructions TV</label>
+        <textarea id="cfgNetflixInstructions" placeholder="Instructions pour allumer la TV et accéder à Netflix…"></textarea>
+      </div>
+    </div>
+
+    <!-- Parking -->
+    <div class="param-section">
+      <h3>🚗 Parking</h3>
+      <div class="field-group">
+        <label>Numéro de place</label>
+        <input type="text" id="cfgParkingPlace" placeholder="Ex: Place N° 07">
+      </div>
+      <div class="field-group">
+        <label>Instructions d'accès</label>
+        <textarea id="cfgParkingInstructions" placeholder="Instructions parking, code d'accès, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- Règlement intérieur -->
+    <div class="param-section">
+      <h3>📋 Règlement Intérieur</h3>
+      <div class="field-group">
+        <label>Texte du règlement (HTML autorisé)</label>
+        <textarea id="cfgReglement" style="min-height:200px;" placeholder="Saisissez le texte du règlement intérieur…"></textarea>
+      </div>
+    </div>
+
+    <!-- Établissement -->
+    <div class="param-section">
+      <h3>🏠 Établissement</h3>
+      <div class="field-group">
+        <label>Nom</label>
+        <input type="text" id="cfgNom" placeholder="Nom de l'établissement">
+      </div>
+      <div class="field-group">
+        <label>Adresse</label>
+        <input type="text" id="cfgAdresse" placeholder="Adresse complète">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field-group">
+          <label>Studio / nuit</label>
+          <input type="text" id="cfgStudioPrice" placeholder="Ex: 25 000 FCFA">
+        </div>
+        <div class="field-group">
+          <label>Appart / nuit</label>
+          <input type="text" id="cfgAppartPrice" placeholder="Ex: 35 000 FCFA">
+        </div>
+      </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="param-section">
+      <h3>🔐 Sécurité</h3>
+      <div class="field-group">
+        <label>Nouvel identifiant</label>
+        <input type="text" id="cfgNewUser" placeholder="Nouvel identifiant admin">
+      </div>
+      <div class="field-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="cfgNewPass" placeholder="Nouveau mot de passe">
+      </div>
+      <button class="save-btn" onclick="updateCredentials()">Mettre à jour</button>
+    </div>
+
+    <button class="btn-primary" onclick="saveAllConfig()">💾 Enregistrer toute la configuration</button>
+
+    <!-- Notifications -->
+    <div class="param-section" style="margin-top:16px;">
+      <h3>🔔 Notifications</h3>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="ti-title">Alerte nouvel avis</div>
+          <div class="ti-desc">Notification à chaque avis reçu</div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="ti-title">Rappel sans réponse</div>
+          <div class="ti-desc">Alerte après 48h sans réponse</div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="ti-title">Rapport mensuel</div>
+          <div class="ti-desc">Résumé de performance mensuel</div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+  </div>
+
+    </div><!-- end panels-area -->
+  </div><!-- end app-body -->
+</div><!-- end appScreen -->
+
+<div id="toast"></div>
+
+<script>
+// ========== CONFIG ==========
+let JSONBIN_ID = localStorage.getItem('lb_bin_id') || '6785b5dcacd3cb34a8b3edd9';
+let JSONBIN_KEY = localStorage.getItem('lb_bin_key') || '$2a$10$43LNnZeebsdi37UiTugFuceUndIIT9oqJLU7qUM0ZN5dOrfA8kR2gC';
+let ADMIN_USER = localStorage.getItem('lb_admin_user') || 'LB';
+let ADMIN_PASS = localStorage.getItem('lb_admin_pass') || 'Artiste200';
+const CLIENT_URL = 'https://lbprestige.github.io/LB-PRESTIGE-APPART/lb_prestige_client.html';
+
+let currentFilter = 'all';
+let allReviews = [];
+let allCodes = {};
+
+// ========== LOGIN ==========
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('lb_admin_session');
+  if (saved) {
+    const s = JSON.parse(saved);
+    if (s.expires > Date.now()) {
+      showApp();
+      return;
+    }
+  }
+
+  const binId = localStorage.getItem('lb_bin_id');
+  const binKey = localStorage.getItem('lb_bin_key');
+  if (binId) { JSONBIN_ID = binId; document.getElementById('cfgBinId').value = binId; }
+  if (binKey) { JSONBIN_KEY = binKey; document.getElementById('cfgApiKey').value = binKey; }
+});
+
+function doAdminLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const remember = document.getElementById('rememberMe').checked;
+
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    if (remember) {
+      localStorage.setItem('lb_admin_session', JSON.stringify({ expires: Date.now() + 7*24*60*60*1000 }));
+    }
+    showApp();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doAdminLogin();
+});
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'flex';
+  loadData();
+  loadConfigForm();
+}
+
+function doLogout() {
+  localStorage.removeItem('lb_admin_session');
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// ========== NAV ==========
+function switchPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel' + name).classList.add('active');
+  el.classList.add('active');
+
+  if (name === 'Reviews') markAllRead();
+  if (name === 'Reglement') {
+    loadSignatures();
+    // Marquer signatures comme vues
+    fetchRecord().then(rec => {
+      localStorage.setItem('lb_seen_sigs', (rec.signatures || []).length);
+      document.getElementById('reglementBadge').style.display = 'none';
+    }).catch(()=>{});
+  }
+}
+
+// ========== DATA ==========
+async function fetchRecord() {
+  const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
+    headers: { 'X-Master-Key': JSONBIN_KEY }
+  });
+  const d = await r.json();
+  return d.record;
+}
+
+async function saveRecord(rec) {
+  await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+    body: JSON.stringify(rec)
+  });
+}
+
+async function loadData() {
+  try {
+    const rec = await fetchRecord();
+    allReviews = rec.reviews || [];
+    allCodes = rec.codes || {};
+
+    const total = allReviews.length;
+    const unread = allReviews.filter(r => !r.read).length;
+    const noreply = allReviews.filter(r => !r.reply).length;
+    const avg = total ? (allReviews.reduce((s,r) => s + (r.rating||0), 0) / total).toFixed(1) : '—';
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statAvg').textContent = avg;
+    document.getElementById('statUnread').textContent = unread;
+    document.getElementById('statNoReply').textContent = noreply;
+
+    document.getElementById('cntAll').textContent = total;
+    document.getElementById('cntUnread').textContent = unread;
+    document.getElementById('cntNoReply').textContent = noreply;
+
+    if (unread > 0) {
+      const badge = document.getElementById('navBadge');
+      badge.style.display = 'flex';
+      badge.textContent = unread;
+    }
+
+    // Badge nouvelles signatures règlement
+    const lastSeenSigs = parseInt(localStorage.getItem('lb_seen_sigs') || '0');
+    const totalSigs = (rec.signatures || []).length;
+    const newSigs = totalSigs - lastSeenSigs;
+    if (newSigs > 0) {
+      const rb = document.getElementById('reglementBadge');
+      rb.style.display = 'flex';
+      rb.textContent = newSigs;
+    }
+
+    // Remplir le sélecteur de clients dans Messages
+    const sel = document.getElementById('msgClientSelect');
+    sel.innerHTML = '<option value="">— Choisir un client —</option>';
+    Object.entries(allCodes).forEach(([code, info]) => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.dataset.phone = info.phone || '';
+      opt.dataset.name = info.name || 'Client';
+      opt.textContent = `${info.name || 'Client'}${info.phone ? ' · ' + info.phone : ''}`;
+      sel.appendChild(opt);
+    });
+
+    renderReviews(allReviews.slice(0, 5), 'recentReviews');
+    renderReviews(allReviews, 'reviewsList');
+    renderCodes(allCodes);
+
+  } catch(e) {
+    console.log('Load error:', e);
+    showToast('Erreur de chargement');
+  }
+}
+
+function renderReviews(reviews, containerId) {
+  const container = document.getElementById(containerId);
+  if (!reviews.length) {
+    container.innerHTML = '<div class="loading-text">Aucun avis pour le moment.</div>';
+    return;
+  }
+
+  container.innerHTML = reviews.map(rv => `
+    <div class="review-card ${!rv.read ? 'unread' : ''}" id="rv_${rv.id}">
+      <div class="rv-header">
+        <div>
+          <div class="rv-name">${rv.clientName || 'Client'}</div>
+          <div class="rv-meta">${rv.date || ''} · ${rv.logement || ''} · ${rv.motif || ''}</div>
+        </div>
+        <div class="rv-stars">${'★'.repeat(rv.rating||0)}${'☆'.repeat(5-(rv.rating||0))}</div>
+      </div>
+      ${rv.positifs?.length ? `<div class="rv-tags">${rv.positifs.map(t=>`<span class="rv-tag pos">✓ ${t}</span>`).join('')}</div>` : ''}
+      ${rv.negatifs?.length ? `<div class="rv-tags">${rv.negatifs.map(t=>`<span class="rv-tag neg">✗ ${t}</span>`).join('')}</div>` : ''}
+      ${rv.comment ? `<div class="rv-comment">"${rv.comment}"</div>` : ''}
+      ${rv.reply ? `<div class="reply-box">Votre réponse : ${rv.reply}</div>` : ''}
+      <div class="reply-input-row">
+        <input type="text" id="reply_${rv.id}" placeholder="Répondre à cet avis…" value="">
+        <button class="btn-sm" onclick="sendReply('${rv.id}')">Envoyer</button>
+        <button class="btn-sm danger" onclick="deleteReview('${rv.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function sendReply(id) {
+  const val = document.getElementById('reply_' + id).value.trim();
+  if (!val) return;
+
+  try {
+    const rec = await fetchRecord();
+    const idx = rec.reviews.findIndex(r => r.id === id);
+    if (idx >= 0) {
+      rec.reviews[idx].reply = val;
+      rec.reviews[idx].read = true;
+    }
+    await saveRecord(rec);
+    allReviews = rec.reviews;
+    renderReviews(allReviews, 'reviewsList');
+    showToast('✓ Réponse envoyée');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm('Supprimer cet avis ?')) return;
+  try {
+    const rec = await fetchRecord();
+    rec.reviews = rec.reviews.filter(r => r.id !== id);
+    await saveRecord(rec);
+    allReviews = rec.reviews;
+    renderReviews(allReviews, 'reviewsList');
+    renderReviews(allReviews.slice(0,5), 'recentReviews');
+    showToast('✓ Avis supprimé');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+async function markAllRead() {
+  try {
+    const rec = await fetchRecord();
+    rec.reviews.forEach(r => r.read = true);
+    await saveRecord(rec);
+    document.getElementById('navBadge').style.display = 'none';
+  } catch(e) {}
+}
+
+function filterReviews(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  let filtered = [...allReviews];
+  if (f === 'unread') filtered = filtered.filter(r => !r.read);
+  else if (f === 'noreply') filtered = filtered.filter(r => !r.reply);
+  else if (f === '5') filtered = filtered.filter(r => r.rating === 5);
+  else if (f === 'studio') filtered = filtered.filter(r => r.logement === 'Studio');
+  else if (f === 'appart') filtered = filtered.filter(r => r.logement === 'Appartement');
+
+  renderReviews(filtered, 'reviewsList');
+}
+
+// ========== CODES ==========
+function renderCodes(codes) {
+  const container = document.getElementById('codesList');
+  const entries = Object.entries(codes);
+  if (!entries.length) {
+    container.innerHTML = '<div class="loading-text">Aucun code actif. Créez votre premier code client.</div>';
+    return;
+  }
+
+  container.innerHTML = entries.map(([code, info]) => `
+    <div class="code-item">
+      <div class="ci-info">
+        <div class="ci-name">${info.name || 'Client'}</div>
+        <div class="ci-code">${code.substring(0,20)}…</div>
+        ${info.phone ? `<div class="ci-phone">📱 ${info.phone}</div>` : ''}
+      </div>
+      <div class="code-actions">
+        <button class="btn-sm" onclick="sendWelcomeWA('${code}', '${info.phone || ''}', '${info.name || 'Client'}')">📲 Accueil</button>
+        <button class="btn-sm" onclick="copyCodeLink('${code}')">🔗</button>
+        <button class="btn-sm danger" onclick="deleteCode('${code}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let code = 'LB-';
+  for (let i = 0; i < 10; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('newCodeValue').value = code;
+}
+
+async function createCode() {
+  const name = document.getElementById('newCodeName').value.trim();
+  const phone = document.getElementById('newCodePhone').value.trim();
+  const code = document.getElementById('newCodeValue').value.trim();
+
+  if (!name || !code) {
+    showToast('⚠ Nom et code requis');
+    return;
+  }
+
+  try {
+    const rec = await fetchRecord();
+    if (!rec.codes) rec.codes = {};
+    rec.codes[code] = { name, phone, createdAt: new Date().toLocaleDateString('fr-FR') };
+    await saveRecord(rec);
+    allCodes = rec.codes;
+    renderCodes(allCodes);
+    document.getElementById('newCodeName').value = '';
+    document.getElementById('newCodePhone').value = '';
+    document.getElementById('newCodeValue').value = '';
+    showToast('✓ Code créé');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+async function deleteCode(code) {
+  if (!confirm('Supprimer ce code ?')) return;
+  try {
+    const rec = await fetchRecord();
+    delete rec.codes[code];
+    await saveRecord(rec);
+    allCodes = rec.codes;
+    renderCodes(allCodes);
+    showToast('✓ Code supprimé');
+  } catch(e) {
+    showToast('Erreur réseau');
+  }
+}
+
+function copyCodeLink(code) {
+  const url = `${CLIENT_URL}?key=${encodeURIComponent(code)}`;
+  navigator.clipboard.writeText(url).then(() => showToast('✓ Lien copié'))
+    .catch(() => { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('✓ Lien copié'); });
+}
+
+function sendWelcomeWA(code, phone, name) {
+  const url = `${CLIENT_URL}?key=${encodeURIComponent(code)}`;
+  const msg = `🌟 Bienvenue au *LB Prestige Cosy Appart*, ${name} !\n\nVotre espace client personnel est prêt :\n🔗 ${url}\n\nVotre code d'accès : *${code}*\n\nN'hésitez pas à consulter le guide d'accueil (Wi-Fi, Netflix, Parking, Cuisine) et à approuver le règlement intérieur.\n\nBon séjour ! ✦\n_LB Prestige Appart_`;
+
+  let waUrl;
+  if (phone) {
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    waUrl = `https://wa.me/${cleanPhone.startsWith('+') ? cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(msg)}`;
+  } else {
+    waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+  window.open(waUrl, '_blank');
+}
+
+// ========== SIGNATURES ==========
+async function loadSignatures() {
+  const container = document.getElementById('signaturesContainer');
+  container.innerHTML = '<div class="loading-text">Chargement…</div>';
+  try {
+    const rec = await fetchRecord();
+    const sigs = (rec.signatures || []).slice().reverse();
+
+    if (!sigs.length) {
+      container.innerHTML = '<div class="sign-empty">Aucune signature pour le moment.<br>Les approbations du règlement apparaîtront ici.</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="font-size:0.8rem;color:var(--white-dim);margin-bottom:12px;">
+        <strong style="color:var(--gold);">${sigs.length}</strong> signature(s) enregistrée(s)
+      </div>
+      ${sigs.map(s => `
+        <div style="background:var(--black-3);border:1px solid rgba(201,168,76,0.12);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:0.9rem;color:var(--white);margin-bottom:4px;">👤 ${s.clientName || '—'}</div>
+              <div style="font-size:0.75rem;color:var(--white-dim);margin-bottom:3px;">📱 ${s.clientPhone || 'Non renseigné'}</div>
+              <div style="font-size:0.7rem;color:var(--gold);font-family:monospace;">🔑 ${s.clientCode || '—'}</div>
+              <div style="font-size:0.68rem;color:rgba(200,191,168,0.5);margin-top:4px;">🕐 ${s.signedAt || '—'}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+              <span style="background:rgba(128,200,128,0.12);border:1px solid rgba(128,200,128,0.3);border-radius:8px;padding:4px 10px;font-size:0.68rem;color:#80c880;text-align:center;">✅ Signé</span>
+              ${s.clientPhone ? `<button class="btn-sm" style="font-size:0.65rem;" onclick="waFromSig('${s.clientPhone}','${s.clientName}','${s.clientCode}')">📲 WA</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  } catch(e) {
+    container.innerHTML = '<div class="sign-empty">Erreur de chargement.</div>';
+  }
+}
+
+function waFromSig(phone, name, code) {
+  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+  const url = `${CLIENT_URL}?key=${encodeURIComponent(code)}`;
+  const msg = `✅ Bonjour *${name}* !\n\nNous confirmons la bonne réception de votre signature du règlement intérieur du *LB Prestige Cosy Appart*.\n\nVotre espace client : 🔗 ${url}\n\nMerci et bon séjour ! ✦\n_LB Prestige Appart_`;
+  const waUrl = `https://wa.me/${cleanPhone.startsWith('+') ? cleanPhone.slice(1) : cleanPhone}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, '_blank');
+}
+
+function exportSignatures() {
+  fetchRecord().then(rec => {
+    const sigs = rec.signatures || [];
+    if (!sigs.length) { showToast('Aucune signature à exporter'); return; }
+    const header = 'Nom,Téléphone,Code client,Date signature\n';
+    const rows = sigs.map(s => `"${s.clientName||''}","${s.clientPhone||''}","${s.clientCode||''}","${s.signedAt||''}"`).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'signatures_reglement.csv';
+    a.click(); URL.revokeObjectURL(url);
+    showToast('✓ CSV exporté');
+  }).catch(() => showToast('Erreur export'));
+}
+
+// ========== MESSAGES ==========
+function selectClientForMsg(code) {
+  if (!code) return;
+  const sel = document.getElementById('msgClientSelect');
+  const opt = sel.querySelector(`option[value="${CSS.escape(code)}"]`) || [...sel.options].find(o => o.value === code);
+  if (!opt) return;
+  const phone = opt.dataset.phone || '';
+  const name = opt.dataset.name || 'Client';
+  document.getElementById('msgClientCode').value = code;
+  document.getElementById('msgPhone').value = phone;
+  // Mettre à jour le texte du template actif
+  const activeTemplate = document.querySelector('.msg-tpl.active');
+  if (activeTemplate) {
+    const tplName = activeTemplate.textContent.trim().toLowerCase()
+      .replace('bienvenue','bienvenue').replace('remerciement','merci')
+      .replace('demander avis','avis').replace('promotion','promo').replace('confirmation','confirm');
+    const key = Object.keys(templates).find(k => templates[k] && activeTemplate.getAttribute('onclick')?.includes(k)) || 'bienvenue';
+    document.getElementById('msgText').value = templates[key](code);
+  }
+}
+
+function quickSendWA(templateName) {
+  const sel = document.getElementById('msgClientSelect');
+  const code = sel.value;
+  if (!code) { showToast('⚠ Sélectionnez d\'abord un client'); return; }
+  const opt = [...sel.options].find(o => o.value === code);
+  const phone = opt?.dataset.phone || '';
+  const name = opt?.dataset.name || 'Client';
+  const msg = templates[templateName] ? templates[templateName](code) : '';
+  if (!msg) return;
+  let waUrl;
+  if (phone) {
+    const clean = phone.replace(/[\s\-\(\)]/g, '');
+    waUrl = `https://wa.me/${clean.startsWith('+') ? clean.slice(1) : clean}?text=${encodeURIComponent(msg)}`;
+  } else {
+    waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+  window.open(waUrl, '_blank');
+}
+
+const templates = {
+  bienvenue: (code) => `🌟 Bienvenue au *LB Prestige Cosy Appart* !\n\nNous sommes ravis de vous accueillir. Votre espace client est disponible ici :\n🔗 ${CLIENT_URL}?key=${encodeURIComponent(code)}\n\nCode d'accès : *${code}*\n\nBon séjour ! ✦`,
+  merci: (code) => `🙏 Merci pour votre séjour au *LB Prestige Cosy Appart* !\n\nVotre confiance nous touche. Si vous avez apprécié votre séjour, n'hésitez pas à laisser un avis.\n\nÀ très bientôt ! ✦`,
+  avis: (code) => `⭐ Bonjour,\n\nVotre avis compte énormément pour nous ! Partagez votre expérience en quelques minutes :\n🔗 ${CLIENT_URL}?key=${encodeURIComponent(code)}\n\nMerci d'avance ! ✦\n_LB Prestige Appart_`,
+  promo: (code) => `🎁 Offre spéciale *LB Prestige Cosy Appart* !\n\nProfitez d'une réduction exclusive sur votre prochain séjour. Contactez-nous pour en savoir plus.\n\nÀ bientôt ! ✦`,
+  confirm: (code) => `✅ Votre réservation au *LB Prestige Cosy Appart* est confirmée.\n\nVotre espace client :\n🔗 ${CLIENT_URL}?key=${encodeURIComponent(code)}\n\nCode : *${code}*\n\nÀ très bientôt ! ✦`
+};
+
+function setTemplate(name, el) {
+  document.querySelectorAll('.msg-tpl').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const code = document.getElementById('msgClientCode').value.trim() || 'CODE_CLIENT';
+  document.getElementById('msgText').value = templates[name](code);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('msgText').value = templates['bienvenue']('CODE_CLIENT');
+});
+
+function sendWhatsApp() {
+  const phone = document.getElementById('msgPhone').value.trim().replace(/[\s\-\(\)]/g, '');
+  const msg = document.getElementById('msgText').value.trim();
+  if (!msg) { showToast('⚠ Saisissez un message'); return; }
+
+  let url;
+  if (phone) {
+    url = `https://wa.me/${phone.startsWith('+') ? phone.slice(1) : phone}?text=${encodeURIComponent(msg)}`;
+  } else {
+    url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+  window.open(url, '_blank');
+}
+
+// ========== CONFIG ==========
+async function loadConfigForm() {
+  try {
+    const rec = await fetchRecord();
+    const cfg = rec.config || {};
+    const setBin = localStorage.getItem('lb_bin_id');
+    const setKey = localStorage.getItem('lb_bin_key');
+
+    if (setBin) document.getElementById('cfgBinId').value = setBin;
+    if (setKey) document.getElementById('cfgApiKey').value = setKey;
+    if (cfg.wifiName) document.getElementById('cfgWifiName').value = cfg.wifiName;
+    if (cfg.wifiPass) document.getElementById('cfgWifiPass').value = cfg.wifiPass;
+    if (cfg.netflixEmail) document.getElementById('cfgNetflixEmail').value = cfg.netflixEmail;
+    if (cfg.netflixPass) document.getElementById('cfgNetflixPass').value = cfg.netflixPass;
+    if (cfg.netflixInstructions) document.getElementById('cfgNetflixInstructions').value = cfg.netflixInstructions;
+    if (cfg.parkingPlace) document.getElementById('cfgParkingPlace').value = cfg.parkingPlace;
+    if (cfg.parkingInstructions) document.getElementById('cfgParkingInstructions').value = cfg.parkingInstructions;
+    if (cfg.reglementText) document.getElementById('cfgReglement').value = cfg.reglementText;
+    if (cfg.studioPrice) document.getElementById('cfgStudioPrice').value = cfg.studioPrice;
+    if (cfg.appartPrice) document.getElementById('cfgAppartPrice').value = cfg.appartPrice;
+    if (rec.meta?.nom) document.getElementById('cfgNom').value = rec.meta.nom;
+    if (rec.meta?.adresse) document.getElementById('cfgAdresse').value = rec.meta.adresse;
+  } catch(e) {}
+}
+
+async function saveAllConfig() {
+  try {
+    const rec = await fetchRecord();
+    if (!rec.config) rec.config = {};
+    if (!rec.meta) rec.meta = {};
+
+    rec.config.wifiName = document.getElementById('cfgWifiName').value.trim();
+    rec.config.wifiPass = document.getElementById('cfgWifiPass').value.trim();
+    rec.config.netflixEmail = document.getElementById('cfgNetflixEmail').value.trim();
+    rec.config.netflixPass = document.getElementById('cfgNetflixPass').value.trim();
+    rec.config.netflixInstructions = document.getElementById('cfgNetflixInstructions').value.trim();
+    rec.config.parkingPlace = document.getElementById('cfgParkingPlace').value.trim();
+    rec.config.parkingInstructions = document.getElementById('cfgParkingInstructions').value.trim();
+    rec.config.reglementText = document.getElementById('cfgReglement').value.trim();
+    rec.config.studioPrice = document.getElementById('cfgStudioPrice').value.trim();
+    rec.config.appartPrice = document.getElementById('cfgAppartPrice').value.trim();
+    rec.meta.nom = document.getElementById('cfgNom').value.trim();
+    rec.meta.adresse = document.getElementById('cfgAdresse').value.trim();
+
+    await saveRecord(rec);
+    showToast('✓ Configuration sauvegardée');
+  } catch(e) {
+    showToast('Erreur de sauvegarde');
+  }
+}
+
+function saveJsonBin() {
+  const id = document.getElementById('cfgBinId').value.trim();
+  const key = document.getElementById('cfgApiKey').value.trim();
+  if (id) { JSONBIN_ID = id; localStorage.setItem('lb_bin_id', id); }
+  if (key) { JSONBIN_KEY = key; localStorage.setItem('lb_bin_key', key); }
+  showToast('✓ JSONBin sauvegardé');
+}
+
+async function testConnection() {
+  try {
+    const rec = await fetchRecord();
+    showToast('✓ Connexion réussie !');
+  } catch(e) {
+    showToast('✗ Connexion échouée');
+  }
+}
+
+function copyClientLink() {
+  navigator.clipboard.writeText(CLIENT_URL)
+    .then(() => showToast('✓ Lien client copié'))
+    .catch(() => showToast('Copiez : ' + CLIENT_URL));
+}
+
+function updateCredentials() {
+  const user = document.getElementById('cfgNewUser').value.trim();
+  const pass = document.getElementById('cfgNewPass').value;
+  if (user) { ADMIN_USER = user; localStorage.setItem('lb_admin_user', user); }
+  if (pass) { ADMIN_PASS = pass; localStorage.setItem('lb_admin_pass', pass); }
+  document.getElementById('cfgNewUser').value = '';
+  document.getElementById('cfgNewPass').value = '';
+  showToast('✓ Identifiants mis à jour et sauvegardés');
+}
+
+// ========== TOAST ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
